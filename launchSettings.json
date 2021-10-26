@@ -1,0 +1,13 @@
+{
+  "profiles": {
+    "Docker Compose": {
+      "commandName": "DockerCompose",
+      "serviceActions": {
+        "mongo-express": "StartWithoutDebugging",
+        "songbookdb": "StartWithoutDebugging",
+        "songbookservice.api": "StartWithoutDebugging"
+      },
+      "commandVersion": "1.0"
+    }
+  }
+}

@@ -2,12 +2,15 @@
   "profiles": {
     "Docker Compose": {
       "commandName": "DockerCompose",
+      "composeLaunchServiceName": "songbookservice.api",
       "serviceActions": {
         "mongo-express": "StartWithoutDebugging",
         "songbookdb": "StartWithoutDebugging",
-        "songbookservice.api": "StartWithoutDebugging"
+        "songbookservice.api": "StartDebugging"
       },
-      "commandVersion": "1.0"
+      "composeLaunchAction": "LaunchBrowser",
+      "commandVersion": "1.0",
+      "composeLaunchUrl": "{Scheme}://localhost:{ServicePort}/swagger"
     }
   }
 }

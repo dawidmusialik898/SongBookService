@@ -46,12 +46,15 @@ namespace SongBookService.API
         {
             //if (env.IsDevelopment())
             //{
-                app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "SongBookService.API v1"));
+            //  app.UseDeveloperExceptionPage();
+            //  app.UseSwagger();
+            //  app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "SongBookService.API v1"));
             //}
-            if (env.IsDevelopment())
-                app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
+            
+            app.UseDeveloperExceptionPage();
+            app.UseSwagger();
+            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "SongBookService.API v1"));
 
             app.UseRouting();
 

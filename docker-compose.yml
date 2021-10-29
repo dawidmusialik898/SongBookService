@@ -6,6 +6,8 @@ services:
     build:
       context: .
       dockerfile: SongBookService.API/Dockerfile
+    ports: 
+    - "8088:80/tcp"
   songbookdb:
     image: mongo
     ports: 

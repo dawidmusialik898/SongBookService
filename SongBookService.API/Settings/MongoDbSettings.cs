@@ -1,17 +1,16 @@
 ﻿namespace SongBookService.API.Settings
 {
-    internal class MongoDbSettings
+    public class MongoDbSettings
     {
-        internal string Host { get; set; }
-        internal int Port { get; set; }
-        internal string User { get; set; }
-        internal string Password { get; set; }
-
-        internal string ConnectionString
+        public string Host { get; set; }
+        public int Port { get; set; }
+        public string User { get; set; }
+        public string Password { get; set; }
+        public string ConnectionString
         {
             get
             {
-                return $"mongodb://{User}:{Password}@{Host}:{Port}";
+                return $"mongodb://{User}:{Password}@{Host}:{Port}/?authSource=admin";
             }
         }
     }

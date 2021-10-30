@@ -30,7 +30,7 @@ namespace SongBookService.API.Model.ValueObjects
             {
                 Prefix = prefix;
             }
-            if (prefix.Length > 5)
+            else if (prefix?.Length > 5)
             {
                 throw new ArgumentException("Song number prefix can be up to 5 characters");
             }

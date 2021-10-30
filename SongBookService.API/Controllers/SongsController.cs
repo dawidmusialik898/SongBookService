@@ -1,4 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using MongoDB.Driver;
+using SongBookService.API.Model.Entities;
+using SongBookService.API.Repository;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,36 +15,73 @@ namespace SongBookService.API.Controllers
     [ApiController]
     public class SongsController : ControllerBase
     {
+        private readonly ISongRepository _repository;
+        public SongsController(ISongRepository repository)
+        {
+            _repository = repository;
+        }
+
         // GET: api/<SongsController>
         [HttpGet]
-        public IEnumerable<string> Get()
+        public async Task<ActionResult<IEnumerable<Song>>> GetAsync()
         {
-            return new string[] { "value1", "value2" };
+            var result = await _repository.GetSongsAsync();
+            if (result == null)
+            {
+                return NotFound();
+            }
+            return Ok(result);
+            //var dbname = "exampledb";
+            //var collectionname = "examplecollection";
+            //var cs = "mongodb://root:example@songbookdb:27017/?authSource=admin";
+            //var client = new MongoClient(cs);
+            //var database = client.GetDatabase(dbname);
+            //var collection = database.GetCollection<string>(collectionname);
+            //collection.InsertOne("example record 1");
+            //collection.InsertOne("example record 2");
+
+            //return BadRequest();
         }
 
         // GET api/<SongsController>/5
         [HttpGet("{id}")]
-        public string Get(int id)
+        public async Task<ActionResult<Song>> GetAsync(Guid id)
         {
-            return "value";
+            var result = await _repository.GetSongAsync(id);
+            if (result == null)
+            {
+                return NotFound();
+            }
+            return Ok(result);
         }
 
         // POST api/<SongsController>
         [HttpPost]
-        public void Post([FromBody] string value)
+        public async Task<ActionResult> PostAsync([FromBody] Song song)
         {
+            await _repository.AddSongAsync(song);
+            return Ok();
         }
 
         // PUT api/<SongsController>/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public async Task<ActionResult> PutAsync(int id, [FromBody] Song song)
         {
+            await _repository.UpdateSongAsync(song);
+            return Ok();
         }
 
         // DELETE api/<SongsController>/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public async Task<ActionResult> DeleteAsync(Guid id)
         {
+            var result = await _repository.GetSongAsync(id);
+            if (result == null)
+            {
+                return NotFound();
+            }
+            await _repository.DeleteSongAsync(id);
+            return Ok();
         }
     }
 }

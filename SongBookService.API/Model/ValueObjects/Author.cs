@@ -24,11 +24,12 @@ namespace SongBookService.API.Model.ValueObjects
             {
                 throw new ArgumentException($"'{nameof(name)}' cannot be null or empty.", nameof(name));
             }
+
             if (name.Length > 30)
             {
                 throw new ArgumentException("Given name is too long.");
             }
-            if (surname.Length > 30)
+            if (surname?.Length > 30)
             {
                 throw new ArgumentException("Given surname is too long");
             }

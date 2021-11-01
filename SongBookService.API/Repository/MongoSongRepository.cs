@@ -1,5 +1,6 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Driver;
+using SongBookService.API.DbInitializers;
 using SongBookService.API.Model.Entities;
 using System;
 using System.Collections.Generic;
@@ -15,10 +16,17 @@ namespace SongBookService.API.Repository
         private readonly IMongoCollection<Song> _songCollection;
         private readonly FilterDefinitionBuilder<Song> _filterBuilder = Builders<Song>.Filter;
 
-        public MongoSongRepository(IMongoClient mongoClient)
+        public MongoSongRepository(IMongoClient mongoClient, IDbInitializer initializer)
         {
             IMongoDatabase database = mongoClient.GetDatabase(_databaseName);
+            
             _songCollection = database.GetCollection<Song>(_collectionName);
+
+            var songs= _songCollection.Find(new BsonDocument()).ToList();
+            if (!songs.Any())
+            {
+                _songCollection.InsertMany(initializer.GetSongs());
+            }
         }
 
         public async Task AddSongAsync(Song song)

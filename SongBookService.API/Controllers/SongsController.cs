@@ -31,16 +31,6 @@ namespace SongBookService.API.Controllers
                 return NotFound();
             }
             return Ok(result);
-            //var dbname = "exampledb";
-            //var collectionname = "examplecollection";
-            //var cs = "mongodb://root:example@songbookdb:27017/?authSource=admin";
-            //var client = new MongoClient(cs);
-            //var database = client.GetDatabase(dbname);
-            //var collection = database.GetCollection<string>(collectionname);
-            //collection.InsertOne("example record 1");
-            //collection.InsertOne("example record 2");
-
-            //return BadRequest();
         }
 
         // GET api/<SongsController>/5

@@ -8,6 +8,7 @@ using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
+using SongBookService.API.DbInitializers;
 using SongBookService.API.Repository;
 using SongBookService.API.Settings;
 
@@ -33,6 +34,7 @@ namespace SongBookService.API
             {
                 return new MongoClient(mongoDbSettings.ConnectionString);
             });
+            services.AddSingleton<IDbInitializer, SneSongsFromXmlInitializer>();
             services.AddSingleton<ISongRepository, MongoSongRepository>();
 
             services.AddControllers(options =>

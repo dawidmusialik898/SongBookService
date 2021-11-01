@@ -1,10 +1,14 @@
-﻿namespace SongBookService.API.Model.ValueObjects
+﻿using DnsClient.Protocol;
+
+namespace SongBookService.API.Model.ValueObjects
 {
     /// <summary>
     /// Song key enum.
     /// </summary>
     public enum Key
     {
+        //unknown
+        Unknown=0,
         //Majors
         C_flat_major,
         G_flat_major,

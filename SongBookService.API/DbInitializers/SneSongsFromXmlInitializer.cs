@@ -36,7 +36,7 @@ namespace SongBookService.API.DbInitializers
             Song outputSong = new()
             {
                 Author = null,
-                Id = new Guid(),
+                Id = Guid.NewGuid(),
                 Key = 0,
                 OriginalTitle = null,
                 Tempo = null,
@@ -74,11 +74,11 @@ namespace SongBookService.API.DbInitializers
             var partname = xmlSongPart.SelectSingleNode(@".//Part")?.InnerText;
             var outputPart = new Part()
             {
-                _name = string.IsNullOrEmpty(partname) ? null : new(partname),
-                _id = new Guid(),
-                _distinctSlides = new()
+                Name = string.IsNullOrEmpty(partname) ? null : new(partname),
+                Id = Guid.NewGuid(),
+                DistinctSlides = new()
             };
-            outputPart._distinctSlides.Add(GetSlide(xmlSongPart.SelectSingleNode(@".//Text")?.InnerText));
+            outputPart.DistinctSlides.Add(GetSlide(xmlSongPart.SelectSingleNode(@".//Text")?.InnerText));
             return outputPart;
         }
 
@@ -91,7 +91,7 @@ namespace SongBookService.API.DbInitializers
 
             var outputSlide = new Slide()
             {
-                Id = new Guid(),
+                Id = Guid.NewGuid(),
                 DistinctLines = GetLines(text)
             };
 
@@ -117,13 +117,13 @@ namespace SongBookService.API.DbInitializers
         {
             return new Line()
             {
-                Id = new Guid(),
+                Id = Guid.NewGuid(),
                 Chords = null,
                 Lyrics = new()
                 {
                     new Lyrics()
                     {
-                        Id = new Guid(),
+                        Id = Guid.NewGuid(),
                         Text = line
                     }
                 }

@@ -16,21 +16,21 @@ namespace SongBookService.API.Model.Entities
         /// <summary>
         /// Part id.
         /// </summary>
-        public Guid _id;
+        public Guid Id;
 
         /// <summary>
         /// Part name.
         /// </summary>
-        public PartName _name;
+        public PartName Name;
 
         /// <summary>
         /// List of slide guids in order we want to show them.
         /// </summary>
-        public List<Guid> _slideOrder;
+        public List<Guid> SlideOrder= new();
 
         /// <summary>
         /// List of distinct slides.
         /// </summary>
-        public List<Slide> _distinctSlides = new();
+        public List<Slide> DistinctSlides = new();
     }
 }

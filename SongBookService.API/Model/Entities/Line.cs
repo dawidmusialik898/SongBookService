@@ -9,6 +9,6 @@ namespace SongBookService.API.Model.Entities
         public Guid Id { get; set; }
         public List<Lyrics> Lyrics { get; set; } = new();
         public List<Chords> Chords { get; set; } = new();
-        public List<Guid> Order { get; set; }
+        public List<Guid> Order { get; set; } = new();
     }
 }

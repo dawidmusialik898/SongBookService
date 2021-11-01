@@ -31,7 +31,7 @@ namespace SongBookService.API.Model.Entities
             slide.DistinctLines.Add(line);
 
             Part part = new();
-            part._distinctSlides.Add(slide);
+            part.DistinctSlides.Add(slide);
 
             DistinctParts.Add(part);
 

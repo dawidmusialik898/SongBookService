@@ -8,6 +8,7 @@ namespace SongBookService.API.DTOs
 {
     public record SimpleSongWithoutStructureDTO
     {
+        public Guid Id { get; init; }
         public int? Number { get; init; }
         public string Title { get; init; }
 
@@ -17,7 +18,7 @@ namespace SongBookService.API.DTOs
 
     public record SimplePartWithoutStructureDTO
     {
-        public string Name;
+        public string Name { get; init; }
         public string Text { get; init; }
     }
 }

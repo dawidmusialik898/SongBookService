@@ -30,7 +30,7 @@ namespace SongBookService.API.DbInitializers
             if (xmlSong is null)
                 throw new ArgumentNullException(nameof(xmlSong));
 
-            SongNumber songNumber = GetNumber(xmlSong.SelectSingleNode(@".//Number")?.InnerText);
+            SongNumber songNumber = new(xmlSong.SelectSingleNode(@".//Number")?.InnerText);
             var title = xmlSong.SelectSingleNode(@".//Title")?.InnerText;
 
             Song outputSong = new()
@@ -105,7 +105,7 @@ namespace SongBookService.API.DbInitializers
                 throw new ArgumentException($"'{nameof(text)}' cannot be null or whitespace.", nameof(text));
             }
             var outputLines = new List<Line>();
-            var lines = text.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+            var lines = text.Split(Constants.NewLineSymbols, StringSplitOptions.None);
             foreach (var line in lines)
             {
                 outputLines.Add(GetLine(line));
@@ -128,25 +128,6 @@ namespace SongBookService.API.DbInitializers
                     }
                 }
             };
-        }
-
-        private static SongNumber GetNumber(string numberString)
-        {
-            //number is empty
-            if (string.IsNullOrEmpty(numberString))
-                return null;
-
-            var firstDigit = numberString.First(x => char.IsDigit(x));
-
-            //without prefix
-            if (numberString.IndexOf(firstDigit) == 0)
-            {
-                return new SongNumber(int.Parse(numberString), null);
-            }
-            else //with prefix
-            {
-                return new SongNumber(int.Parse(numberString[numberString.IndexOf(firstDigit)..]), numberString[..numberString.IndexOf(firstDigit)]);
-            }
         }
     }
 }

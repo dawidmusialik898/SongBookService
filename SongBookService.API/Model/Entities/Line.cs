@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SongBookService.API.Model.Entities
 {
@@ -11,7 +12,7 @@ namespace SongBookService.API.Model.Entities
         public List<Guid> Order { get; set; } = new();
         public string GetText()
         {
-            return string.Join("",Lyrics);
+            return string.Join("",Lyrics.Select(l=>l.Text));
         }
     }
 }

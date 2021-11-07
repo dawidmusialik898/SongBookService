@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 namespace SongBookService.API.Model.ValueObjects
 {
@@ -19,21 +20,45 @@ namespace SongBookService.API.Model.ValueObjects
         /// </summary>
         public string Prefix { get; init; }
 
-        public SongNumber(int number, string prefix)
+        public SongNumber(string songNumber)
         {
-            if (number < 1)
+            //number is empty
+            if (string.IsNullOrEmpty(songNumber))
+                throw new ArgumentNullException("Song number cannot be null");
+
+            var firstDigit = songNumber.First(x => char.IsDigit(x));
+            //without prefix
+            if (songNumber.IndexOf(firstDigit) == 0)
+            {
+                Number = int.Parse(songNumber);
+                Prefix = null;
+            }
+            else //with prefix
+            {
+                Number = int.Parse(songNumber[songNumber.IndexOf(firstDigit)..]);
+                Prefix = songNumber[..(songNumber.IndexOf(firstDigit) + 1)];
+            }
+            ValidateSongNumber();
+        }
+
+        public SongNumber(int? songNumber)
+        {
+            Prefix = null;
+            Number = songNumber ?? throw new ArgumentNullException(nameof(songNumber));
+            ValidateSongNumber();
+        }
+
+        private void ValidateSongNumber()
+        {
+            if (Number < 1)
             {
                 throw new ArgumentException("Song number have to be above 0");
             }
-            Number = number;
-            if (prefix == null)
-            {
-                Prefix = prefix;
-            }
-            else if (prefix?.Length > 5)
+            else if (Prefix?.Length > 5)
             {
                 throw new ArgumentException("Song number prefix can be up to 5 characters");
             }
         }
+
     }
 }

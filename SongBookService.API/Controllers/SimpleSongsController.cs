@@ -15,51 +15,48 @@ namespace SongBookService.API.Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    public class SongsController : ControllerBase
+    public class SimpleSongsController : ControllerBase
     {
         private readonly ISongRepository _repository;
-        public SongsController(ISongRepository repository)
+        public SimpleSongsController(ISongRepository repository)
         {
             _repository = repository;
         }
 
         // GET: <SongsController>
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<SongItemListDTO>>> GetSongsAsync()
+        public async Task<ActionResult<IEnumerable<SongItemListDTO>>> GetSongListItemsAsync()
         {
             var result = await _repository.GetSongsAsync();
             if (result == null)
             {
                 return NotFound();
             }
-            return Ok(result.Select(song=>song.AsItemListDTO()));
+            return Ok(result.Select(song=>song.AsItemListDTO()).OrderBy(s=>s.Number));
         }
 
         // GET <SongsController>/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Song>> GetFullSongByIdAsync(Guid id)
+        public async Task<ActionResult<SimpleSongWithoutStructureDTO>> GetSimpleSongByIdAsync(Guid id)
         {
-            var result = await _repository.GetSongAsync(id);
-            if (result == null)
+            var resultSong = await _repository.GetSongAsync(id);
+            var resultDTO = resultSong?.AsSimpleSongWithoutStructureDTO();
+            if (resultDTO == null)
             {
                 return NotFound();
             }
-            return Ok(result);
+            return Ok(resultDTO);
         }
 
         // POST <SongsController>
         [HttpPost]
-        public async Task<ActionResult> PostAsync([FromBody] Song song)
+        public async Task<ActionResult> PostAsync([FromBody] SimpleSongWithoutStructureDTO simpleSong)
         {
-            await _repository.AddSongAsync(song);
-            return Ok();
-        }
+            var song = await _repository.GetSongAsync(simpleSong.Id);
+            if (song != null)
+                return BadRequest("Song with this id already exists in database.");
 
-        // PUT <SongsController>/5
-        [HttpPut("{id}")]
-        public async Task<ActionResult> PutAsync(int id, [FromBody] Song song)
-        {
-            await _repository.UpdateSongAsync(song);
+            await _repository.AddSongAsync(simpleSong.AsSong());
             return Ok();
         }
 

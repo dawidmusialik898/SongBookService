@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
+using SongBookService.API.DTOs;
+using SongBookService.API.Extensions;
 using SongBookService.API.Model.Entities;
 using SongBookService.API.Repository;
 using System;
@@ -11,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace SongBookService.API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     public class SongsController : ControllerBase
     {
@@ -21,21 +23,21 @@ namespace SongBookService.API.Controllers
             _repository = repository;
         }
 
-        // GET: api/<SongsController>
+        // GET: <SongsController>
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Song>>> GetAsync()
+        public async Task<ActionResult<IEnumerable<SongItemListDTO>>> GetSongsAsync()
         {
             var result = await _repository.GetSongsAsync();
             if (result == null)
             {
                 return NotFound();
             }
-            return Ok(result);
+            return Ok(result.Select(song=>song.AsItemListDTO()));
         }
 
-        // GET api/<SongsController>/5
+        // GET <SongsController>/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Song>> GetAsync(Guid id)
+        public async Task<ActionResult<Song>> GetFullSongByIdAsync(Guid id)
         {
             var result = await _repository.GetSongAsync(id);
             if (result == null)
@@ -45,7 +47,7 @@ namespace SongBookService.API.Controllers
             return Ok(result);
         }
 
-        // POST api/<SongsController>
+        // POST <SongsController>
         [HttpPost]
         public async Task<ActionResult> PostAsync([FromBody] Song song)
         {
@@ -53,7 +55,7 @@ namespace SongBookService.API.Controllers
             return Ok();
         }
 
-        // PUT api/<SongsController>/5
+        // PUT <SongsController>/5
         [HttpPut("{id}")]
         public async Task<ActionResult> PutAsync(int id, [FromBody] Song song)
         {
@@ -61,7 +63,7 @@ namespace SongBookService.API.Controllers
             return Ok();
         }
 
-        // DELETE api/<SongsController>/5
+        // DELETE <SongsController>/5
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteAsync(Guid id)
         {

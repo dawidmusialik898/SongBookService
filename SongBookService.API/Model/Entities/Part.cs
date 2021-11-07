@@ -1,4 +1,5 @@
-﻿using SongBookService.API.Model.ValueObjects;
+﻿using Microsoft.AspNetCore.SignalR;
+using SongBookService.API.Model.ValueObjects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,5 +33,11 @@ namespace SongBookService.API.Model.Entities
         /// List of distinct slides.
         /// </summary>
         public List<Slide> DistinctSlides = new();
+
+        public string GetText()
+        {
+            var slides = DistinctSlides.Select(s => s.GetText());
+            return string.Join(Environment.NewLine,slides);
+        }
     }
 }

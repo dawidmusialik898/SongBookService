@@ -1,4 +1,5 @@
-﻿using SongBookService.API.Model.ValueObjects;
+﻿using Microsoft.AspNetCore.SignalR;
+using SongBookService.API.Model.ValueObjects;
 using System;
 using System.Collections.Generic;
 
@@ -18,23 +19,5 @@ namespace SongBookService.API.Model.Entities
         public Key Key { get; set; }
         public List<Guid> PartOrder { get; set; } = new();
         public List<Part> DistinctParts { get; set; } = new();
-
-        public void AddPart(string s)
-        {
-            Lyrics l = new();
-            l.Text = s;
-
-            Line line = new();
-            line.Lyrics.Add(l);
-
-            Slide slide = new();
-            slide.DistinctLines.Add(line);
-
-            Part part = new();
-            part.DistinctSlides.Add(slide);
-
-            DistinctParts.Add(part);
-
-        }
     }
 }

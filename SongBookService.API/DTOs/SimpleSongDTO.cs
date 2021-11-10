@@ -6,17 +6,17 @@ using System.Threading.Tasks;
 
 namespace SongBookService.API.DTOs
 {
-    public record SimpleSongWithoutStructureDTO
+    public record SimpleSongDTO
     {
         public Guid Id { get; init; }
-        public int? Number { get; init; }
+        public string Number { get; init; }
         public string Title { get; init; }
 
 
-        public List<SimplePartWithoutStructureDTO> Parts { get; init; }
+        public List<SimplePartDTO> Parts { get; init; }
     }
 
-    public record SimplePartWithoutStructureDTO
+    public record SimplePartDTO
     {
         public string Name { get; init; }
         public string Text { get; init; }

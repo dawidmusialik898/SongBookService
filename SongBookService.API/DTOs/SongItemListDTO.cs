@@ -10,7 +10,7 @@ namespace SongBookService.API.DTOs
     public record SongItemListDTO
     {
         public Guid Id { get; init; }
-        public int? Number { get; init; }
+        public string Number { get; init; }
         public string Title { get; init; }
     }
 }

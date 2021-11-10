@@ -1,15 +1,13 @@
-﻿using Microsoft.AspNetCore.Http;
-using SongBookService.API.DTOs;
+﻿using SongBookService.API.DTOs;
 using SongBookService.API.Model.Entities;
 using SongBookService.API.Model.ValueObjects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace SongBookService.API.Extensions
 {
-    public static class DTOExtensions
+    public static class SimpleDTOExtensions
     {
         public static SongItemListDTO AsItemListDTO(this Song song)
         {
@@ -17,23 +15,23 @@ namespace SongBookService.API.Extensions
             {
                 Id = song.Id,
                 Title = song.Title?.Title,
-                Number = song.Number?.Number,
+                Number = song.Number?.AsString(),
             };
         }
 
-        public static SimpleSongWithoutStructureDTO AsSimpleSongWithoutStructureDTO(this Song song)
+        public static SimpleSongDTO AsSimpleSongDTO(this Song song)
         {
-            return new SimpleSongWithoutStructureDTO()
+            return new SimpleSongDTO()
             {
                 Id= song.Id,
-                Number = song.Number?.Number,
+                Number = song.Number?.Prefix + song.Number?.Number,
                 Title = song.Title?.Title,
-                Parts = song.DistinctParts.Select(
-                    p => new SimplePartWithoutStructureDTO() { Text = p.GetText(), Name = p.Name?.Name }).ToList()
+                Parts = song.DistinctParts?.Select(
+                    p => new SimplePartDTO() { Text = p.GetText(), Name = p.Name?.Name }).ToList()
             };
         }
 
-        public static Song AsSong(this SimpleSongWithoutStructureDTO simpleSong)
+        public static Song AsSong(this SimpleSongDTO simpleSong)
         {
             var parts = GetPartsFromSimpleSong(simpleSong);
             return new Song()
@@ -50,7 +48,7 @@ namespace SongBookService.API.Extensions
             };
         }
 
-        private static List<Part> GetPartsFromSimpleSong(SimpleSongWithoutStructureDTO simpleSong)
+        private static List<Part> GetPartsFromSimpleSong(SimpleSongDTO simpleSong)
         {
             List<Part> outputParts = new();
             foreach (var p in simpleSong.Parts)
@@ -60,7 +58,7 @@ namespace SongBookService.API.Extensions
             return outputParts;
         }
 
-        private static Part AsPart(this SimplePartWithoutStructureDTO p)
+        private static Part AsPart(this SimplePartDTO p)
         {
             var lyrics = p.Text
                 .Split(Constants.NewLineSymbols, StringSplitOptions.None)
@@ -84,8 +82,7 @@ namespace SongBookService.API.Extensions
                     new Slide()
                     {
                         Id=Guid.NewGuid(),
-                        DistinctLines=lines.ToList(),
-                        LineOrder= lines.Select(l=>l.Id).ToList()
+                        Lines=lines.ToList(),
                     }
                 };
 

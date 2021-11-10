@@ -36,7 +36,7 @@ namespace SongBookService.API.Model.ValueObjects
             else //with prefix
             {
                 Number = int.Parse(songNumber[songNumber.IndexOf(firstDigit)..]);
-                Prefix = songNumber[..(songNumber.IndexOf(firstDigit) + 1)];
+                Prefix = songNumber[..(songNumber.IndexOf(firstDigit))];
             }
             ValidateSongNumber();
         }
@@ -48,6 +48,10 @@ namespace SongBookService.API.Model.ValueObjects
             ValidateSongNumber();
         }
 
+        public string AsString()
+        {
+            return Prefix + Number;
+        }
         private void ValidateSongNumber()
         {
             if (Number < 1)

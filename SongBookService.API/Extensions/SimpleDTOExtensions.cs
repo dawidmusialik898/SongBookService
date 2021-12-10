@@ -55,13 +55,14 @@ namespace SongBookService.API.Extensions
             {
                 outputParts.Add(p.AsPart());
             }
+
             return outputParts;
         }
 
         private static Part AsPart(this SimplePartDTO p)
         {
             var lyrics = p.Text
-                .Split(Constants.NewLineSymbols, StringSplitOptions.None)
+                .Split(Constants._newLineSymbols, StringSplitOptions.None)
                 .ToList()
                 .Select(s => new Lyrics()
                 {

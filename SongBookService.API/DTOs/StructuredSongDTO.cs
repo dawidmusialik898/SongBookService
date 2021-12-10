@@ -14,7 +14,6 @@ namespace SongBookService.API.DTOs
         public List<Guid> PartOrder { get; init; }
     }
 
-
     public record StructuredPartDTO
     {
         public Guid Id { get; init; }

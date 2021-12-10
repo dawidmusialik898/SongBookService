@@ -11,8 +11,6 @@ namespace SongBookService.API.DTOs
         public Guid Id { get; init; }
         public string Number { get; init; }
         public string Title { get; init; }
-
-
         public List<SimplePartDTO> Parts { get; init; }
     }
 

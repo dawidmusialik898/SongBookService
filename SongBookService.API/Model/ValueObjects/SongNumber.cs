@@ -24,7 +24,9 @@ namespace SongBookService.API.Model.ValueObjects
         {
             //number is empty
             if (string.IsNullOrEmpty(songNumber))
+            {
                 throw new ArgumentNullException("Song number cannot be null");
+            }
 
             var firstDigit = songNumber.First(x => char.IsDigit(x));
             //without prefix
@@ -36,8 +38,9 @@ namespace SongBookService.API.Model.ValueObjects
             else //with prefix
             {
                 Number = int.Parse(songNumber[songNumber.IndexOf(firstDigit)..]);
-                Prefix = songNumber[..(songNumber.IndexOf(firstDigit))];
+                Prefix = songNumber[..songNumber.IndexOf(firstDigit)];
             }
+
             ValidateSongNumber();
         }
 
@@ -48,10 +51,8 @@ namespace SongBookService.API.Model.ValueObjects
             ValidateSongNumber();
         }
 
-        public string AsString()
-        {
-            return Prefix + Number;
-        }
+        public string AsString() => 
+            Prefix + Number;
         private void ValidateSongNumber()
         {
             if (Number < 1)
@@ -63,6 +64,5 @@ namespace SongBookService.API.Model.ValueObjects
                 throw new ArgumentException("Song number prefix can be up to 5 characters");
             }
         }
-
     }
 }

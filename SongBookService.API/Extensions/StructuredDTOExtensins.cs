@@ -44,8 +44,6 @@ namespace SongBookService.API.Extensions
                 Text = slide.GetText()
             };
         }
-
-
         public static Song AsSong(this StructuredSongDTO structuredSong)
         {
             return new Song()
@@ -74,7 +72,7 @@ namespace SongBookService.API.Extensions
         private static Slide AsSlide(this StructuredSlideDTO structuredSlide)
         {
             var lines = new List<Line>();
-            foreach (var line in structuredSlide.Text.Split(Constants.NewLineSymbols, StringSplitOptions.None))
+            foreach (var line in structuredSlide.Text.Split(Constants._newLineSymbols, StringSplitOptions.None))
             {
                 lines.Add(GetLine(line));
             }
@@ -105,5 +103,4 @@ namespace SongBookService.API.Extensions
         }
     }
 }
-
 

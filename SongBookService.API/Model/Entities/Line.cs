@@ -10,9 +10,7 @@ namespace SongBookService.API.Model.Entities
         public List<Lyrics> Lyrics { get; set; } = new();
         public List<Chords> Chords { get; set; } = new();
         public List<Guid> Order { get; set; } = new();
-        public string GetText()
-        {
-            return string.Join("",Lyrics.Select(l=>l.Text));
-        }
+        public string GetText() =>
+            string.Join("", Lyrics.Select(l => l.Text));
     }
 }

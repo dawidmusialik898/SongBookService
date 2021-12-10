@@ -18,7 +18,7 @@ namespace SongBookService.API.Repository
 
         public MongoSongRepository(IMongoClient mongoClient, IDbInitializer initializer)
         {
-            IMongoDatabase database = mongoClient.GetDatabase(_databaseName);
+            var database = mongoClient.GetDatabase(_databaseName);
             
             _songCollection = database.GetCollection<Song>(_collectionName);
 
@@ -29,10 +29,8 @@ namespace SongBookService.API.Repository
             }
         }
 
-        public async Task AddSongAsync(Song song)
-        {
+        public async Task AddSongAsync(Song song) =>
             await _songCollection.InsertOneAsync(song);
-        }
 
         public async Task DeleteSongAsync(Guid id)
         {
@@ -46,10 +44,8 @@ namespace SongBookService.API.Repository
             return await _songCollection.Find(filter).SingleOrDefaultAsync();
         }
 
-        public async Task<IEnumerable<Song>> GetSongsAsync()
-        {
-            return await _songCollection.Find(new BsonDocument()).ToListAsync();
-        }
+        public async Task<IEnumerable<Song>> GetSongsAsync() =>
+            await _songCollection.Find(new BsonDocument()).ToListAsync();
 
         public async Task UpdateSongAsync(Song modifiedSong)
         {

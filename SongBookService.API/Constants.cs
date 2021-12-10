@@ -7,6 +7,6 @@ namespace SongBookService.API
 {
     internal static class Constants
     {
-        internal static readonly string[] NewLineSymbols =  {"\r\n", "\r", "\n" };
+        internal static readonly string[] _newLineSymbols =  {"\r\n", "\r", "\n" };
     }
 }

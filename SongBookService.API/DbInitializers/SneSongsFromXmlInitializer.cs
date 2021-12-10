@@ -1,10 +1,10 @@
 ﻿using SongBookService.API.Model.Entities;
+
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Xml;
-using SongBookService.API.Model.ValueObjects;
 using System.Linq;
+using System.Xml;
 
 namespace SongBookService.API.DbInitializers
 {
@@ -14,21 +14,27 @@ namespace SongBookService.API.DbInitializers
         public IEnumerable<Song> GetSongs()
         {
             if (!File.Exists(_filepath))
+            {
                 throw new InvalidDataException(Path.GetFullPath(_filepath));
+            }
 
             XmlDocument doc = new();
             doc.Load(_filepath);
-            XmlNodeList xmlSongs = doc.DocumentElement.SelectNodes(@"//SlideGroup");
-            Song[] songs = new Song[xmlSongs.Count];
-            for (int i = 0; i < xmlSongs.Count; i++)
+            var xmlSongs = doc.DocumentElement.SelectNodes(@"//SlideGroup");
+            var songs = new Song[xmlSongs.Count];
+            for (var i = 0; i < xmlSongs.Count; i++)
+            {
                 songs[i] = GetSong(xmlSongs[i]);
+            }
 
             return songs;
         }
         private static Song GetSong(XmlNode xmlSong)
         {
             if (xmlSong is null)
+            {
                 throw new ArgumentNullException(nameof(xmlSong));
+            }
 
             var songNumberString = xmlSong.SelectSingleNode(@".//Number")?.InnerText;
             var title = xmlSong.SelectSingleNode(@".//Title")?.InnerText;
@@ -61,10 +67,11 @@ namespace SongBookService.API.DbInitializers
                     Name = partGroup.Select(p => p.Name).First(),
                     Id = Guid.NewGuid(),
                     DistinctSlides = partGroup.SelectMany(p => p.DistinctSlides).ToList(),
-                    SlideOrder=ids.ToList()
+                    SlideOrder = ids.ToList()
                 };
                 collapsedParts.Add(collapsedPart);
             }
+
             outputSong.DistinctParts = collapsedParts;
         }
 
@@ -75,12 +82,14 @@ namespace SongBookService.API.DbInitializers
             foreach (var part in outputSong.DistinctParts)
             {
                 var duplicates = outputSong.DistinctParts.Where(x => x.GetText().Equals(part.GetText())).ToArray();
-                if(!uniqueParts.Any(x=>x.Id== duplicates.First().Id))
+                if (!uniqueParts.Any(x => x.Id == duplicates.First().Id))
                 {
                     uniqueParts.Add(duplicates.First());
                 }
+
                 ids.Add(duplicates.First().Id);
             }
+
             outputSong.PartOrder = ids;
             outputSong.DistinctParts = uniqueParts;
         }
@@ -88,12 +97,16 @@ namespace SongBookService.API.DbInitializers
         private static List<Part> GetParts(XmlNodeList xmlSongParts)
         {
             if (xmlSongParts is null)
+            {
                 throw new ArgumentNullException(nameof(xmlSongParts));
+            }
 
             List<Part> songParts = new();
 
-            for (int i = 0; i < xmlSongParts.Count; i++)
+            for (var i = 0; i < xmlSongParts.Count; i++)
+            {
                 songParts.Add(GetPart(xmlSongParts[i]));
+            }
 
             return songParts;
         }
@@ -128,9 +141,11 @@ namespace SongBookService.API.DbInitializers
                 {
                     uniqueSlides.Add(duplicates.First());
                 }
+
                 ids.Add(duplicates.First().Id);
             }
-            part.SlideOrder =ids;
+
+            part.SlideOrder = ids;
             part.DistinctSlides = uniqueSlides;
         }
 
@@ -156,12 +171,14 @@ namespace SongBookService.API.DbInitializers
             {
                 throw new ArgumentException($"'{nameof(text)}' cannot be null or whitespace.", nameof(text));
             }
+
             var outputLines = new List<Line>();
-            var lines = text.Split(Constants.NewLineSymbols, StringSplitOptions.None);
+            var lines = text.Split(Constants._newLineSymbols, StringSplitOptions.None);
             foreach (var line in lines)
             {
                 outputLines.Add(GetLine(line));
             }
+
             return outputLines;
         }
 

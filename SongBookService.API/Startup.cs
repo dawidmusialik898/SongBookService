@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
@@ -18,9 +17,7 @@ namespace SongBookService.API
     public class Startup
     {
         public Startup(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
+            => Configuration = configuration;
 
         public IConfiguration Configuration { get; }
 
@@ -38,12 +35,12 @@ namespace SongBookService.API
             services.AddControllers(options =>
                 options.SuppressAsyncSuffixInActionNames = false);
 
-            services.AddSwaggerGen(c => 
+            services.AddSwaggerGen(c =>
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "SongBookService.API", Version = "v1" }));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app)
         {
             app.UseHttpsRedirection();
 
@@ -55,9 +52,9 @@ namespace SongBookService.API
 
             app.UseRouting();
 
-            app.UseAuthorization(); 
+            app.UseAuthorization();
 
-            app.UseEndpoints(endpoints 
+            app.UseEndpoints(endpoints
                 => endpoints.MapControllers());
         }
     }

@@ -1,10 +1,10 @@
-﻿using SongBookService.API.Model.Entities;
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml;
+
+using SongBookService.API.Model.Entities;
 
 namespace SongBookService.API.DbInitializers
 {

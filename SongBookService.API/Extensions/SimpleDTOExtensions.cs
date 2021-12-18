@@ -1,9 +1,10 @@
-﻿using SongBookService.API.DTOs;
-using SongBookService.API.Model.Entities;
-using SongBookService.API.Model.ValueObjects;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+
+using SongBookService.API.DTOs;
+using SongBookService.API.Model.Entities;
+using SongBookService.API.Model.ValueObjects;
 
 namespace SongBookService.API.Extensions
 {
@@ -23,7 +24,7 @@ namespace SongBookService.API.Extensions
         {
             return new SimpleSongDTO()
             {
-                Id= song.Id,
+                Id = song.Id,
                 Number = song.Number?.Prefix + song.Number?.Number,
                 Title = song.Title?.Title,
                 Parts = song.DistinctParts?.Select(
@@ -90,7 +91,7 @@ namespace SongBookService.API.Extensions
             return new Part()
             {
                 Id = Guid.NewGuid(),
-                Name = string.IsNullOrEmpty(p.Name)? null:new PartName(p.Name),
+                Name = string.IsNullOrEmpty(p.Name) ? null : new PartName(p.Name),
                 DistinctSlides = slides,
                 SlideOrder = slides.Select(s => s.Id).ToList()
             };

@@ -25,7 +25,7 @@ namespace SongBookService.API.Model.ValueObjects
             //number is empty
             if (string.IsNullOrEmpty(songNumber))
             {
-                throw new ArgumentNullException("Song number cannot be null");
+                throw new ArgumentNullException(nameof(songNumber));
             }
 
             var firstDigit = songNumber.First(x => char.IsDigit(x));
@@ -51,7 +51,7 @@ namespace SongBookService.API.Model.ValueObjects
             ValidateSongNumber();
         }
 
-        public string AsString() => 
+        public string AsString() =>
             Prefix + Number;
         private void ValidateSongNumber()
         {

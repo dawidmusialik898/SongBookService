@@ -1,7 +1,8 @@
-﻿using SongBookService.API.Model.Entities;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+
+using SongBookService.API.Model.Entities;
 
 namespace SongBookService.API.Repository
 {

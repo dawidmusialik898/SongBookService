@@ -1,5 +1,6 @@
-﻿using SongBookService.API.Model.Entities;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+
+using SongBookService.API.Model.Entities;
 
 namespace SongBookService.API.DbInitializers
 {

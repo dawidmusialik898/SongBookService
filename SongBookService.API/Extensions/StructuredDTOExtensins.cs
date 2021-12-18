@@ -1,13 +1,10 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+
 using SongBookService.API.DTOs;
 using SongBookService.API.Model.Entities;
 using SongBookService.API.Model.ValueObjects;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
 
 namespace SongBookService.API.Extensions
 {
@@ -64,7 +61,7 @@ namespace SongBookService.API.Extensions
             return new Part()
             {
                 Id = structuredPart.Id,
-                Name = new PartName(string.IsNullOrEmpty(structuredPart.Name)? null : structuredPart.Name),
+                Name = new PartName(string.IsNullOrEmpty(structuredPart.Name) ? null : structuredPart.Name),
                 DistinctSlides = structuredPart.Slides.Select(s => s.AsSlide()).ToList(),
                 SlideOrder = structuredPart.SlideOrder,
             };

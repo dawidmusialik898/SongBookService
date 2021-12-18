@@ -1,11 +1,13 @@
-﻿using MongoDB.Bson;
-using MongoDB.Driver;
-using SongBookService.API.DbInitializers;
-using SongBookService.API.Model.Entities;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+
+using MongoDB.Bson;
+using MongoDB.Driver;
+
+using SongBookService.API.DbInitializers;
+using SongBookService.API.Model.Entities;
 
 namespace SongBookService.API.Repository
 {
@@ -19,10 +21,10 @@ namespace SongBookService.API.Repository
         public MongoSongRepository(IMongoClient mongoClient, IDbInitializer initializer)
         {
             var database = mongoClient.GetDatabase(_databaseName);
-            
+
             _songCollection = database.GetCollection<Song>(_collectionName);
 
-            var songs= _songCollection.Find(new BsonDocument()).ToList();
+            var songs = _songCollection.Find(new BsonDocument()).ToList();
             if (!songs.Any())
             {
                 _songCollection.InsertMany(initializer.GetSongs());

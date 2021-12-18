@@ -1,11 +1,8 @@
-﻿using Microsoft.AspNetCore.SignalR;
-using SongBookService.API.Model.ValueObjects;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
+
+using SongBookService.API.Model.ValueObjects;
 
 namespace SongBookService.API.Model.Entities
 {
@@ -37,7 +34,7 @@ namespace SongBookService.API.Model.Entities
         public string GetText()
         {
             var slides = DistinctSlides.Select(s => s.GetText());
-            return string.Join(Environment.NewLine,slides);
+            return string.Join(Environment.NewLine, slides);
         }
     }
 }

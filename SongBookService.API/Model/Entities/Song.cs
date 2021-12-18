@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.SignalR;
-using SongBookService.API.Model.ValueObjects;
-using System;
+﻿using System;
 using System.Collections.Generic;
+
+using SongBookService.API.Model.ValueObjects;
 
 namespace SongBookService.API.Model.Entities
 {

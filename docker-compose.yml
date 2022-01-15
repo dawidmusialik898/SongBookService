@@ -1,8 +1,8 @@
 version: '3.4'
 
 services:
-  songbookservice.api:
-    image: ${DOCKER_REGISTRY-}songbookserviceapi
+  songbookservice:
+    image: dmusialiksne.azurecr.io/songbookserviceapi
     build:
       context: .
       dockerfile: SongBookService.API/Dockerfile
@@ -16,6 +16,7 @@ services:
     volumes:
       - ${APPDATA}\Microsoft\UserSecrets\:/root/.microsoft/usersecrets:ro
       - ${APPDATA}\ASP.NET\Https\:/root/.aspnet/https:ro
+
   songbookdb:
     image: mongo
     ports: 

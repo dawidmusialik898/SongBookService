@@ -3,7 +3,7 @@
   <PropertyGroup Label="Globals">
     <ProjectVersion>2.1</ProjectVersion>
     <DockerTargetOS>Linux</DockerTargetOS>
-    <ProjectGuid>dbc0b9f8-59dd-4c7f-9a7d-bf0ee6b1a4f1</ProjectGuid>
+    <ProjectGuid>94311fbe-31b8-4b29-b35c-8771485eebef</ProjectGuid>
     <DockerLaunchAction>LaunchBrowser</DockerLaunchAction>
     <DockerServiceUrl>{Scheme}://localhost:{ServicePort}/swagger</DockerServiceUrl>
     <DockerServiceName>songbookservice.api</DockerServiceName>

@@ -2,7 +2,7 @@
   "profiles": {
     "Docker Compose": {
       "commandName": "DockerCompose",
-      "composeLaunchServiceName": "songbookservice.api",
+      "composeLaunchServiceName": "songbookservice",
       "serviceActions": {
         "mongo-express": "StartWithoutDebugging",
         "songbookdb": "StartWithoutDebugging",

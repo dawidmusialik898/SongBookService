@@ -10,7 +10,6 @@ using MongoDB.Driver;
 
 using SongBookService.API.DbInitializers;
 using SongBookService.API.Repository;
-using SongBookService.API.Settings;
 
 namespace SongBookService.API
 {
@@ -26,9 +25,9 @@ namespace SongBookService.API
         {
             BsonSerializer.RegisterSerializer(new GuidSerializer(BsonType.String));
             BsonSerializer.RegisterSerializer(new DateTimeOffsetSerializer(BsonType.String));
-            var mongoDbSettings = Configuration.GetSection(nameof(MongoDbSettings)).Get<MongoDbSettings>();
+            var connectionString = Configuration.GetConnectionString("Default");
 
-            services.AddSingleton<IMongoClient>(serviceProvider => new MongoClient(mongoDbSettings.ConnectionString));
+            services.AddSingleton<IMongoClient>(serviceProvider => new MongoClient(connectionString));
             services.AddSingleton<IDbInitializer, SneSongsFromXmlInitializer>();
             services.AddSingleton<ISongRepository, MongoSongRepository>();
 

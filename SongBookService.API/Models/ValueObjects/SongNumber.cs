@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 
-namespace SongBookService.API.Model.ValueObjects
+namespace SongBookService.API.Models.ValueObjects
 {
     /// <summary>
     /// Value object.

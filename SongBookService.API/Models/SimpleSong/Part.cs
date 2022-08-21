@@ -2,13 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 
-using SongBookService.API.Model.ValueObjects;
+using SongBookService.API.Models.ValueObjects;
 
-namespace SongBookService.API.Model.Entities
+namespace SongBookService.API.Models.SimpleSong
 {
-    /// <summary>
-    /// Entity class representing song part.
-    /// </summary>
     public class Part
     {
         /// <summary>
@@ -33,7 +30,7 @@ namespace SongBookService.API.Model.Entities
 
         public string GetText()
         {
-            var slides = DistinctSlides.Select(s => s.GetText());
+            var slides = DistinctSlides.Select(s => s.Text);
             return string.Join(Environment.NewLine, slides);
         }
     }

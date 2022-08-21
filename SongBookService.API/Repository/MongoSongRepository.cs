@@ -7,7 +7,7 @@ using MongoDB.Bson;
 using MongoDB.Driver;
 
 using SongBookService.API.DbInitializers;
-using SongBookService.API.Model.Entities;
+using SongBookService.API.Models.FullSong;
 
 namespace SongBookService.API.Repository
 {

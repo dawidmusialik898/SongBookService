@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SongBookService.API.Model.Entities
+namespace SongBookService.API.Models.FullSong
 {
     public class Lyrics
     {

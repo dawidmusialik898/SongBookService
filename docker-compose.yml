@@ -13,7 +13,6 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=https://+:443;http://+:80
       - ASPNETCORE_HTTPS_PORT=8089
-      - ConnectionStrings__Default=mongodb://dawid-musialik:aaiSgeq7SYP9PIxXqxTfpvltzDjqjMlEkbxLLtqk4nV0lmm9pY56BLjapfzWq25oiFEv9IyPbESItzVaQS5hTA==@dawid-musialik.mongo.cosmos.azure.com:10255/?ssl=true&replicaSet=globaldb&retrywrites=false&maxIdleTimeMS=120000&appName=@dawid-musialik@
     volumes:
       - ${APPDATA}\Microsoft\UserSecrets\:/root/.microsoft/usersecrets:ro
       - ${APPDATA}\ASP.NET\Https\:/root/.aspnet/https:ro

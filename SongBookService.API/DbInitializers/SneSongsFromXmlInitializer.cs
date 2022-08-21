@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Xml;
 
-using SongBookService.API.Model.Entities;
+using SongBookService.API.Models.FullSong;
 
 namespace SongBookService.API.DbInitializers
 {

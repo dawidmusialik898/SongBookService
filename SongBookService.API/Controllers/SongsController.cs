@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 
 using SongBookService.API.DTOs;
-using SongBookService.API.Extensions;
-using SongBookService.API.Model.Entities;
+using SongBookService.API.Extensions.FullSongExtensions;
+using SongBookService.API.Models.FullSong;
 using SongBookService.API.Repository;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -22,8 +22,7 @@ namespace SongBookService.API.Controllers
         public SongsController(ISongRepository repository)
             => _repository = repository;
 
-        #region Common
-        // GET: <SongsController>
+        /// GET: <SongsController>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<SongItemListDTO>>> GetSongListItemsAsync()
         {
@@ -32,22 +31,6 @@ namespace SongBookService.API.Controllers
                 NotFound()
                 : Ok(result.Select(song => song.AsItemListDTO()).OrderBy(s => s.Number));
         }
-
-        // DELETE <SongsController>/5
-        [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleteAsync(Guid id)
-        {
-            var result = await _repository.GetSongAsync(id);
-            if (result == null)
-            {
-                return NotFound();
-            }
-            await _repository.DeleteSongAsync(id);
-            return Ok();
-        }
-        #endregion common
-
-        #region SimpleSong
 
         // GET <SongsController>/5
         [HttpGet("SimpleSong/{id}")]
@@ -60,22 +43,15 @@ namespace SongBookService.API.Controllers
                 : Ok(resultDTO);
         }
 
-        // POST <SongsController>
-        [HttpPost("SimpleSong")]
-        public async Task<ActionResult> PostAsync([FromBody] SimpleSongDTO simpleSong)
+        [HttpGet("StrucutredSong/{id}")]
+        public async Task<ActionResult<StructuredSongDTO>> GetStructuredSongByIdAsync(Guid id)
         {
-            var song = await _repository.GetSongAsync(simpleSong.Id);
-            if (song != null)
-            {
-                return BadRequest("Song with this id already exists in database.");
-            }
-
-            await _repository.AddSongAsync(simpleSong.AsSong());
-            return Ok();
+            var resultSong = await _repository.GetSongAsync(id);
+            return resultSong == null ?
+                NotFound()
+                : Ok(resultSong.AsStructuredSong());
         }
-        #endregion SimpleSong
 
-        #region FullSong
         // GET <SongsController>/5
         [HttpGet("FullSong/{id}")]
         public async Task<ActionResult<Song>> GetFullSongByIdAsync(Guid id)
@@ -98,31 +74,31 @@ namespace SongBookService.API.Controllers
             await _repository.AddSongAsync(song);
             return Ok();
         }
-        #endregion FullSong
 
-        #region StructuredSong
-        [HttpGet("StrucutredSong/{id}")]
-        public async Task<ActionResult<StructuredSongDTO>> GetStructuredSongByIdAsync(Guid id)
+        [HttpPut("FullSong")]
+        public async Task<ActionResult> ModifyFullSongAsync([FromBody] Song song)
         {
-            var resultSong = await _repository.GetSongAsync(id);
-            return resultSong == null ?
-                NotFound()
-                : Ok(resultSong.AsStructuredSong());
-        }
-
-        // POST <SongsController>
-        [HttpPost("StructuredSong")]
-        public async Task<ActionResult> AddStructuredSongAsync([FromBody] StructuredSongDTO structuredSong)
-        {
-            var dbsong = await _repository.GetSongAsync(structuredSong.Id);
+            var dbsong = await _repository.GetSongAsync(song.Id);
             if (dbsong != null)
             {
                 return BadRequest("Song with this id already exists in database.");
             }
 
-            await _repository.AddSongAsync(structuredSong.AsSong());
+            await _repository.AddSongAsync(song);
             return Ok();
         }
-        #endregion StructuredSong
+
+        /// DELETE <SongsController>/5
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeleteSongAsync(Guid id)
+        {
+            var result = await _repository.GetSongAsync(id);
+            if (result == null)
+            {
+                return NotFound();
+            }
+            await _repository.DeleteSongAsync(id);
+            return Ok();
+        }
     }
 }

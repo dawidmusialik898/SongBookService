@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 
-using SongBookService.API.Model.ValueObjects;
+using SongBookService.API.Models.ValueObjects;
 
-namespace SongBookService.API.Model.Entities
+namespace SongBookService.API.Models.FullSong
 {
     /// <summary>
     /// Entity class representing a song.

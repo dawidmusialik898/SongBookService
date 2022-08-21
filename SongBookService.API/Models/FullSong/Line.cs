@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace SongBookService.API.Model.Entities
+namespace SongBookService.API.Models.FullSong
 {
     public class Line
     {

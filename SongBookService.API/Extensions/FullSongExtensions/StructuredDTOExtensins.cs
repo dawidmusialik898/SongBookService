@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 
 using SongBookService.API.DTOs;
-using SongBookService.API.Model.Entities;
-using SongBookService.API.Model.ValueObjects;
+using SongBookService.API.Models.ValueObjects;
+using SongBookService.API.Models.FullSong;
 
-namespace SongBookService.API.Extensions
+namespace SongBookService.API.Extensions.FullSongExtensions
 {
     public static class StructuredDTOExtensins
     {

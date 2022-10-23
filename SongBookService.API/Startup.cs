@@ -9,7 +9,8 @@ using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
 
 using SongBookService.API.DbInitializers;
-using SongBookService.API.Repository;
+using SongBookService.API.Repository.Song;
+using SongBookService.API.Repository.StructuredSong;
 
 namespace SongBookService.API
 {
@@ -28,8 +29,11 @@ namespace SongBookService.API
             var connectionString = Configuration.GetConnectionString("Default");
 
             services.AddSingleton<IMongoClient>(serviceProvider => new MongoClient(connectionString));
-            services.AddSingleton<IDbInitializer, SneSongsFromXmlInitializer>();
+            services.AddSingleton<IFullSongDbInitializer, SneFullSongsFromXmlInitializer>();
             services.AddSingleton<ISongRepository, MongoSongRepository>();
+            services.AddSingleton<IStructuredSongDbInitializer, SneStructuredSongsFromXmlInitializer>();
+            services.AddSingleton<IStructuredSongRepository, MongoStructuredSongRepository>();
+            services.AddAutoMapper(typeof(Program).Assembly);
 
             services.AddControllers(options =>
                 options.SuppressAsyncSuffixInActionNames = false);

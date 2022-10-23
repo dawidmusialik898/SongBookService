@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using System.Xml.Linq;
 
 namespace SongBookService.API.Models.ValueObjects
 {
@@ -17,6 +19,28 @@ namespace SongBookService.API.Models.ValueObjects
         /// Surname of person, useless for organisation.
         /// </summary>
         public string Surname { get; init; }
+
+        public string Fullname
+        {
+            get => Name + Surname;
+            init { }
+        }
+
+        public Author(string name)
+        {
+            if (string.IsNullOrEmpty(name))
+            {
+                throw new ArgumentException($"'{nameof(name)}' cannot be null or empty.", nameof(name));
+            }
+            if (name.Length > 60)
+            {
+                throw new ArgumentException("Given name is too long.");
+            }
+            var names = name.Split(" ").ToList();
+            Surname = names.Last();
+            names.Remove(Surname);
+            Name = string.Join(" ", names);
+        }
 
         public Author(string name, string surname)
         {

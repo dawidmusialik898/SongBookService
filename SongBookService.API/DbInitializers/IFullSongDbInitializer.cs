@@ -4,7 +4,7 @@ using SongBookService.API.Models.FullSong;
 
 namespace SongBookService.API.DbInitializers
 {
-    public interface IDbInitializer
+    public interface IFullSongDbInitializer
     {
         IEnumerable<Song> GetSongs();
     }

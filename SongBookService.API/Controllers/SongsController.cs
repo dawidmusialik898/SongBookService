@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using SongBookService.API.DTOs;
 using SongBookService.API.Extensions.FullSongExtensions;
 using SongBookService.API.Models.FullSong;
-using SongBookService.API.Repository;
+using SongBookService.API.Repository.Song;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -70,6 +70,8 @@ namespace SongBookService.API.Controllers
             {
                 return BadRequest("Song with this id already exists in database.");
             }
+            //need to add check with number- cannot have two songs with the same number.
+            //or meyby number and id should be generated??
 
             await _repository.AddSongAsync(song);
             return Ok();
@@ -81,7 +83,7 @@ namespace SongBookService.API.Controllers
             var dbsong = await _repository.GetSongAsync(song.Id);
             if (dbsong != null)
             {
-                return BadRequest("Song with this id already exists in database.");
+                await _repository.UpdateSongAsync(song);
             }
 
             await _repository.AddSongAsync(song);

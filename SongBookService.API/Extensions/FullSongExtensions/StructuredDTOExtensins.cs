@@ -30,7 +30,6 @@ namespace SongBookService.API.Extensions.FullSongExtensions
                 Id = part.Id,
                 Name = part.Name?.Name,
                 Slides = part.DistinctSlides.Select(s => s.AsStructuredSlide()).ToList(),
-                SlideOrder = part.SlideOrder,
             };
         }
         private static StructuredSlideDTO AsStructuredSlide(this Slide slide)
@@ -63,7 +62,6 @@ namespace SongBookService.API.Extensions.FullSongExtensions
                 Id = structuredPart.Id,
                 Name = new PartName(string.IsNullOrEmpty(structuredPart.Name) ? null : structuredPart.Name),
                 DistinctSlides = structuredPart.Slides.Select(s => s.AsSlide()).ToList(),
-                SlideOrder = structuredPart.SlideOrder,
             };
         }
         private static Slide AsSlide(this StructuredSlideDTO structuredSlide)

@@ -20,6 +20,11 @@ namespace SongBookService.API.Models.ValueObjects
         /// </summary>
         public string Prefix { get; init; }
 
+        public string FullNumber
+        {
+            get => Prefix + Number; set { }
+        }
+
         public SongNumber(string songNumber)
         {
             //number is empty

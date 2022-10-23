@@ -4,9 +4,9 @@ using System.Linq;
 
 using SongBookService.API.Models.ValueObjects;
 
-namespace SongBookService.API.Models.SimpleSong
+namespace SongBookService.API.Models.StructuredSong
 {
-    public class Part
+    public class StructuredPart
     {
         /// <summary>
         /// Part id.
@@ -16,17 +16,12 @@ namespace SongBookService.API.Models.SimpleSong
         /// <summary>
         /// Part name.
         /// </summary>
-        public PartName Name { get; set; }
-
-        /// <summary>
-        /// List of slide guids in order we want to show them.
-        /// </summary>
-        public List<Guid> SlideOrder { get; set; } = new();
+        public string Name { get; set; }
 
         /// <summary>
         /// List of distinct slides.
         /// </summary>
-        public List<Slide> DistinctSlides { get; set; } = new();
+        public List<StructuredSlide> DistinctSlides { get; set; } = new();
 
         public string GetText()
         {

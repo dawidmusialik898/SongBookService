@@ -13,7 +13,7 @@ namespace SongBookService.API.Models.StructuredSong
         public string Author { get; set; }
         public string Number { get; set; }
         public Key Key { get; set; }
-        public IEnumerable<StructuredPart> DistinctParts { get; set; }
+        public IEnumerable<StructuredPart> Parts { get; set; }
         public IEnumerable<Guid> PartOrder { get; set; }
         public IEnumerable<Guid> SlideOrder { get; set; }
     }

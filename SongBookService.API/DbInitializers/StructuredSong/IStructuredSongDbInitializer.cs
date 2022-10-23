@@ -2,10 +2,10 @@
 
 using System.Collections.Generic;
 
-namespace SongBookService.API.DbInitializers
+namespace SongBookService.API.DbInitializers.StructuredSong
 {
     public interface IStructuredSongDbInitializer
     {
-        IEnumerable<StructuredSong> GetSongs();
+        IEnumerable<Models.StructuredSong.StructuredSong> GetSongs();
     }
 }

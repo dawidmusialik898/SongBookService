@@ -21,11 +21,11 @@ namespace SongBookService.API.Models.StructuredSong
         /// <summary>
         /// List of distinct slides.
         /// </summary>
-        public List<StructuredSlide> DistinctSlides { get; set; } = new();
+        public List<StructuredSlide> Slides { get; set; } = new();
 
         public string GetText()
         {
-            var slides = DistinctSlides.Select(s => s.Text);
+            var slides = Slides.Select(s => s.Text);
             return string.Join(Environment.NewLine, slides);
         }
     }

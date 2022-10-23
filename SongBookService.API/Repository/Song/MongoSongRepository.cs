@@ -7,7 +7,7 @@ using MongoDB.Bson;
 using MongoDB.Bson.Serialization.IdGenerators;
 using MongoDB.Driver;
 
-using SongBookService.API.DbInitializers;
+using SongBookService.API.DbInitializers.FullSong;
 using SongBookService.API.Models.FullSong;
 
 namespace SongBookService.API.Repository.Song

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using MongoDB.Bson;
 using MongoDB.Driver;
 
-using SongBookService.API.DbInitializers;
+using SongBookService.API.DbInitializers.StructuredSong;
 
 namespace SongBookService.API.Repository.StructuredSong
 {
@@ -36,13 +36,15 @@ namespace SongBookService.API.Repository.StructuredSong
                 throw new ArgumentNullException(nameof(song));
             }
 
-            var songWithTheSameId = await _songCollection.FindAsync(x => x.Id == song.Id);
+            var songWithTheSameIdAsyncCursor = await _songCollection.FindAsync(x => x.Id == song.Id);
+            var songWithTheSameId = songWithTheSameIdAsyncCursor.ToList();
             if (songWithTheSameId.Any())
             {
                 throw new Exception($"Song with this Id: {songWithTheSameId.First().Id}, already exists in database");
             }
 
-            var songWithTheSameTitle = await _songCollection.FindAsync(x => x.Number == song.Number);
+            var songWithTheSameTitleAsyncCursor = await _songCollection.FindAsync(x => x.Number == song.Number);
+            var songWithTheSameTitle = songWithTheSameTitleAsyncCursor.ToList();
             if (songWithTheSameTitle.Any())
             {
                 throw new Exception($"Song with this Number: {songWithTheSameTitle.First().Number}" +
@@ -84,7 +86,8 @@ namespace SongBookService.API.Repository.StructuredSong
         public async Task UpdateSongAsync(Models.StructuredSong.StructuredSong modifiedSong)
         {
             var filter = _filterBuilder.Eq(existingItem => existingItem.Id, modifiedSong.Id);
-            var songToBeReplaced = await _songCollection.FindAsync(filter);
+            var songToBeReplacedAsyncCursor = await _songCollection.FindAsync(filter);
+            var songToBeReplaced = songToBeReplacedAsyncCursor.ToList();
             if (!songToBeReplaced.Any())
             {
                 await _songCollection.InsertOneAsync(modifiedSong);

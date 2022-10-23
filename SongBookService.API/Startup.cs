@@ -8,7 +8,8 @@ using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
 
-using SongBookService.API.DbInitializers;
+using SongBookService.API.DbInitializers.FullSong;
+using SongBookService.API.DbInitializers.StructuredSong;
 using SongBookService.API.Repository.Song;
 using SongBookService.API.Repository.StructuredSong;
 

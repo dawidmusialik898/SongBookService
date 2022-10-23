@@ -6,12 +6,12 @@ using System.Xml;
 
 using SongBookService.API.Models.StructuredSong;
 
-namespace SongBookService.API.DbInitializers
+namespace SongBookService.API.DbInitializers.StructuredSong
 {
     public class SneStructuredSongsFromXmlInitializer : IStructuredSongDbInitializer
     {
         private readonly string _filepath = @"snesongs.xml";
-        public IEnumerable<StructuredSong> GetSongs()
+        public IEnumerable<Models.StructuredSong.StructuredSong> GetSongs()
         {
             if (!File.Exists(_filepath))
             {
@@ -21,7 +21,7 @@ namespace SongBookService.API.DbInitializers
             XmlDocument doc = new();
             doc.Load(_filepath);
             var xmlSongs = doc.DocumentElement.SelectNodes(@"//SlideGroup");
-            var songs = new StructuredSong[xmlSongs.Count];
+            var songs = new Models.StructuredSong.StructuredSong[xmlSongs.Count];
             for (var i = 0; i < xmlSongs.Count; i++)
             {
                 songs[i] = GetSong(xmlSongs[i]);
@@ -29,7 +29,7 @@ namespace SongBookService.API.DbInitializers
 
             return songs;
         }
-        private static StructuredSong GetSong(XmlNode xmlSong)
+        private static Models.StructuredSong.StructuredSong GetSong(XmlNode xmlSong)
         {
             if (xmlSong is null)
             {
@@ -39,7 +39,7 @@ namespace SongBookService.API.DbInitializers
             var songNumberString = xmlSong.SelectSingleNode(@".//Number")?.InnerText;
             var title = xmlSong.SelectSingleNode(@".//Title")?.InnerText;
 
-            StructuredSong outputSong = new()
+            Models.StructuredSong.StructuredSong outputSong = new()
             {
                 Author = null,
                 Id = Guid.NewGuid(),
@@ -47,7 +47,7 @@ namespace SongBookService.API.DbInitializers
                 OriginalTitle = null,
                 Number = songNumberString,
                 Title = title,
-                DistinctParts = GetParts(xmlSong.SelectNodes(@".//Slide"))
+                Parts = GetParts(xmlSong.SelectNodes(@".//Slide"))
             };
             CollapseSlidesIntoParts(outputSong);
             MakePartUnique(outputSong);
@@ -56,42 +56,42 @@ namespace SongBookService.API.DbInitializers
             return outputSong;
         }
 
-        private static void GetSlideOrder(StructuredSong outputSong)
+        private static void GetSlideOrder(Models.StructuredSong.StructuredSong outputSong)
         {
             IEnumerable<StructuredSlide> slides = new List<StructuredSlide>();
             foreach (var part in outputSong.PartOrder)
             {
-                slides =slides.Concat(outputSong.DistinctParts.First(x => x.Id == part).DistinctSlides);
+                slides = slides.Concat(outputSong.Parts.First(x => x.Id == part).Slides);
             }
             outputSong.SlideOrder = slides.Select(x => x.Id);
         }
 
-        private static void CollapseSlidesIntoParts(StructuredSong outputSong)
+        private static void CollapseSlidesIntoParts(Models.StructuredSong.StructuredSong outputSong)
         {
             var collapsedParts = new List<StructuredPart>();
-            var partGroupedByName = outputSong.DistinctParts.GroupBy(x => x.Name).ToList();
+            var partGroupedByName = outputSong.Parts.GroupBy(x => x.Name).ToList();
             foreach (var partGroup in partGroupedByName)
             {
-                var ids = partGroup.SelectMany(p => p.DistinctSlides.Select(s => s.Id));
+                var ids = partGroup.SelectMany(p => p.Slides.Select(s => s.Id));
                 var collapsedPart = new StructuredPart()
                 {
                     Name = partGroup.Select(p => p.Name).First(),
                     Id = Guid.NewGuid(),
-                    DistinctSlides = partGroup.SelectMany(p => p.DistinctSlides).ToList(),
+                    Slides = partGroup.SelectMany(p => p.Slides).ToList(),
                 };
                 collapsedParts.Add(collapsedPart);
             }
 
-            outputSong.DistinctParts = collapsedParts;
+            outputSong.Parts = collapsedParts;
         }
 
-        private static void MakePartUnique(StructuredSong outputSong)
+        private static void MakePartUnique(Models.StructuredSong.StructuredSong outputSong)
         {
             var uniqueParts = new List<StructuredPart>();
             var ids = new List<Guid>();
-            foreach (var part in outputSong.DistinctParts)
+            foreach (var part in outputSong.Parts)
             {
-                var duplicates = outputSong.DistinctParts.Where(x => x.GetText().Equals(part.GetText())).ToArray();
+                var duplicates = outputSong.Parts.Where(x => x.GetText().Equals(part.GetText())).ToArray();
                 if (!uniqueParts.Any(x => x.Id == duplicates.First().Id))
                 {
                     uniqueParts.Add(duplicates.First());
@@ -101,7 +101,7 @@ namespace SongBookService.API.DbInitializers
             }
 
             outputSong.PartOrder = ids;
-            outputSong.DistinctParts = uniqueParts;
+            outputSong.Parts = uniqueParts;
         }
 
         private static List<StructuredPart> GetParts(XmlNodeList xmlSongParts)
@@ -133,9 +133,9 @@ namespace SongBookService.API.DbInitializers
             {
                 Name = partname,
                 Id = Guid.NewGuid(),
-                DistinctSlides = new()
+                Slides = new()
             };
-            outputPart.DistinctSlides.Add(GetSlide(xmlSongPart.SelectSingleNode(@".//Text")?.InnerText));
+            outputPart.Slides.Add(GetSlide(xmlSongPart.SelectSingleNode(@".//Text")?.InnerText));
             MakeSlidesUnique(outputPart);
             return outputPart;
         }
@@ -144,9 +144,9 @@ namespace SongBookService.API.DbInitializers
         {
             var ids = new List<Guid>();
             var uniqueSlides = new List<StructuredSlide>();
-            foreach (var slide in part.DistinctSlides)
+            foreach (var slide in part.Slides)
             {
-                var duplicates = part.DistinctSlides.Where(x => x.Text.Equals(part.GetText())).ToArray();
+                var duplicates = part.Slides.Where(x => x.Text.Equals(part.GetText())).ToArray();
                 if (!uniqueSlides.Any(x => x.Id == duplicates.First().Id))
                 {
                     uniqueSlides.Add(duplicates.First());
@@ -154,7 +154,7 @@ namespace SongBookService.API.DbInitializers
 
                 ids.Add(duplicates.First().Id);
             }
-            part.DistinctSlides = uniqueSlides;
+            part.Slides = uniqueSlides;
         }
 
         private static StructuredSlide GetSlide(string text)
@@ -167,7 +167,7 @@ namespace SongBookService.API.DbInitializers
             var outputSlide = new StructuredSlide()
             {
                 Id = Guid.NewGuid(),
-                Text= text
+                Text = text
             };
 
             return outputSlide;

@@ -6,7 +6,7 @@ using System.Xml;
 
 using SongBookService.API.Models.FullSong;
 
-namespace SongBookService.API.DbInitializers
+namespace SongBookService.API.DbInitializers.FullSong
 {
     public class SneFullSongsFromXmlInitializer : IFullSongDbInitializer
     {

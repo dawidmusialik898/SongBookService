@@ -36,7 +36,7 @@ namespace SongBookService.API.Controllers
         }
 
         // GET <SimpleSongsController>/5
-        [HttpGet("SimpleSong/{id}")]
+        [HttpGet("{id}")]
         public async Task<ActionResult<StructuredSongDTO>> GetSimpleSongByIdAsync(Guid id)
         {
             var resultSong = await _repository.GetSongAsync(id);
@@ -46,7 +46,7 @@ namespace SongBookService.API.Controllers
         }
 
         // POST <SimpleSongsController>
-        [HttpPost("SimpleSong")]
+        [HttpPost]
         public async Task<ActionResult> AddFullSongAsync([FromBody] StructuredSongDTO songDTO)
         {
             var dbsong = await _repository.GetSongAsync(songDTO.Id);
@@ -59,7 +59,7 @@ namespace SongBookService.API.Controllers
             return Ok();
         }
 
-        [HttpPut("SimpleSong")]
+        [HttpPut]
         public async Task<ActionResult> ModifyFullSongAsync([FromBody] StructuredSongDTO songDTO)
         {
             var dbsong = await _repository.GetSongAsync(songDTO.Id);
@@ -68,13 +68,15 @@ namespace SongBookService.API.Controllers
             {
                 await _repository.UpdateSongAsync(song);
             }
-
-            await _repository.AddSongAsync(song);
+            else
+            {
+                await _repository.AddSongAsync(song);
+            }
             return Ok();
         }
 
         /// DELETE <SimpleSongsController>/5
-        [HttpDelete("{id}")]
+        [HttpDelete]
         public async Task<ActionResult> DeleteSongAsync(Guid id)
         {
             var result = await _repository.GetSongAsync(id);

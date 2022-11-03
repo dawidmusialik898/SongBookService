@@ -10,8 +10,6 @@ using SongBookService.API.DTOs;
 using SongBookService.API.Models.StructuredSong;
 using SongBookService.API.Repository.StructuredSong;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-
 namespace SongBookService.API.Controllers
 {
     [Route("api/[controller]")]
@@ -48,24 +46,5 @@ namespace SongBookService.API.Controllers
                 NotFound()
                 : Ok(resultSong);
         }
-
-        //// POST api/<SimpleSongController>
-        //[HttpPost]
-        //public async Task PostSong([FromBody] SimpleSongDTO value)
-        //{
-        //
-        //}
-        //
-        //// PUT api/<SimpleSongController>/5
-        //[HttpPut("{id}")]
-        //public void Put(int id, [FromBody] SimpleSongDTO value)
-        //{
-        //}
-        //
-        //// DELETE api/<SimpleSongController>/5
-        //[HttpDelete("{id}")]
-        //public void Delete(int id)
-        //{
-        //}
     }
 }

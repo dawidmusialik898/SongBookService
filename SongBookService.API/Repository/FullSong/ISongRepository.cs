@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace SongBookService.API.Repository.Song
+namespace SongBookService.API.Repository.FullSong
 {
     public interface ISongRepository
     {

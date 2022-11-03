@@ -10,7 +10,8 @@ using MongoDB.Driver;
 
 using SongBookService.API.DbInitializers.FullSong;
 using SongBookService.API.DbInitializers.StructuredSong;
-using SongBookService.API.Repository.Song;
+using SongBookService.API.Repository.FullSong;
+using SongBookService.API.Repository.FullSsong;
 using SongBookService.API.Repository.StructuredSong;
 
 namespace SongBookService.API
@@ -41,6 +42,10 @@ namespace SongBookService.API
 
             services.AddSwaggerGen(c =>
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "SongBookService.API", Version = "v1" }));
+
+            services.AddCors(options => options.AddPolicy(name: "myCorsPolicy",
+                                  policy => policy.WithOrigins("http://localhost:4200/",
+                                                          "https://localhost:4200/")));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -60,6 +65,10 @@ namespace SongBookService.API
 
             app.UseEndpoints(endpoints
                 => endpoints.MapControllers());
+
+            app.UseCors("myCorsPolicy");
+
+            
         }
     }
 }

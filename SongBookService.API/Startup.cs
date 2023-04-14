@@ -18,6 +18,7 @@ namespace SongBookService.API
 {
     public class Startup
     {
+        private const string corsPolicy = "CorsPolicy";
         public Startup(IConfiguration configuration)
             => Configuration = configuration;
 
@@ -35,7 +36,6 @@ namespace SongBookService.API
             services.AddSingleton<ISongRepository, MongoSongRepository>();
             services.AddSingleton<IStructuredSongDbInitializer, SneStructuredSongsFromXmlInitializer>();
             services.AddSingleton<IStructuredSongRepository, MongoStructuredSongRepository>();
-            services.AddAutoMapper(typeof(Program).Assembly);
 
             services.AddControllers(options =>
                 options.SuppressAsyncSuffixInActionNames = false);
@@ -43,15 +43,14 @@ namespace SongBookService.API
             services.AddSwaggerGen(c =>
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "SongBookService.API", Version = "v1" }));
 
-            services.AddCors(options => options.AddPolicy(name: "myCorsPolicy",
-                                  policy => policy.WithOrigins("http://localhost:4200/",
-                                                          "https://localhost:4200/")));
+            services.AddCors(options => options.AddPolicy(corsPolicy,
+                                  policy => policy.WithOrigins(/*"http://192.168.176.1:4200",*/ "http://localhost:4200")));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app)
         {
-            //app.UseHttpsRedirection();
+            app.UseHttpsRedirection();
 
             app.UseDeveloperExceptionPage();
 
@@ -60,15 +59,14 @@ namespace SongBookService.API
             app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "SongBookService.API v1"));
 
             app.UseRouting();
+            
+            app.UseCors();
 
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints
-                => endpoints.MapControllers());
+                => endpoints.MapControllers().RequireCors(corsPolicy));
 
-            app.UseCors("myCorsPolicy");
-
-            
         }
     }
 }

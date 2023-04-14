@@ -18,9 +18,9 @@ namespace SongBookService.API.Extensions.FullSongExtensions
                 Number = song.Number?.AsString(),
                 Title = song.Title?.Title,
                 PartOrder = song.PartOrder,
-                Parts = song.DistinctParts.Select(p => p.AsStructuredPart()).ToList()
+                Parts = song.DistinctParts.Select(p => p.AsStructuredPart()).ToList(),
+                Slides = song.DistinctParts.SelectMany(x => x.DistinctSlides.Select(slide => slide.AsStructuredSlide())).ToList(),
             };
-
         }
         private static StructuredPartDTO AsStructuredPart(this Part part)
         {
@@ -29,7 +29,7 @@ namespace SongBookService.API.Extensions.FullSongExtensions
             {
                 Id = part.Id,
                 Name = part.Name?.Name,
-                Slides = part.DistinctSlides.Select(s => s.AsStructuredSlide()).ToList(),
+                SlideOrder = part.SlideOrder,
             };
         }
         private static StructuredSlideDTO AsStructuredSlide(this Slide slide)
@@ -47,7 +47,7 @@ namespace SongBookService.API.Extensions.FullSongExtensions
                 Id = structuredSong.Id,
                 Number = new SongNumber(structuredSong.Number),
                 Title = new SongTitle(structuredSong.Title),
-                DistinctParts = structuredSong.Parts.Select(p => p.AsPart()).ToList(),
+                DistinctParts = structuredSong.Parts.Select(p => p.AsPart(structuredSong)).ToList(),
                 PartOrder = structuredSong.PartOrder,
                 Author = null,
                 Key = 0,
@@ -55,13 +55,14 @@ namespace SongBookService.API.Extensions.FullSongExtensions
                 Tempo = null,
             };
         }
-        private static Part AsPart(this StructuredPartDTO structuredPart)
+        private static Part AsPart(this StructuredPartDTO structuredPart, StructuredSongDTO structuredSong)
         {
             return new Part()
             {
                 Id = structuredPart.Id,
                 Name = new PartName(string.IsNullOrEmpty(structuredPart.Name) ? null : structuredPart.Name),
-                DistinctSlides = structuredPart.Slides.Select(s => s.AsSlide()).ToList(),
+                DistinctSlides = structuredPart.SlideOrder.Distinct().SelectMany(id=> structuredSong.Slides.Where(slide=>slide.Id==id)).Select(slide=>slide.AsSlide()).ToList(),
+                SlideOrder= structuredPart.SlideOrder,
             };
         }
         private static Slide AsSlide(this StructuredSlideDTO structuredSlide)

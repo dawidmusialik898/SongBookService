@@ -15,6 +15,5 @@ namespace SongBookService.API.Models.StructuredSong
         public Key Key { get; set; }
         public IEnumerable<StructuredPart> Parts { get; set; }
         public IEnumerable<Guid> PartOrder { get; set; }
-        public IEnumerable<Guid> SlideOrder { get; set; }
     }
 }

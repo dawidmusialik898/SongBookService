@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 using AutoMapper;
@@ -7,6 +8,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 
 using SongBookService.API.DTOs;
+using SongBookService.API.Extensions.StructuredSongExtensions;
 using SongBookService.API.Models.StructuredSong;
 using SongBookService.API.Repository.StructuredSong;
 
@@ -17,20 +19,18 @@ namespace SongBookService.API.Controllers
     public class SimpleSongController : ControllerBase
     {
         private readonly IStructuredSongRepository _repository;
-        private readonly IMapper _mapper;
 
-        public SimpleSongController(IMapper mapper, IStructuredSongRepository repository)
+        public SimpleSongController(IStructuredSongRepository repository)
         {
-            _mapper = mapper;
             _repository = repository;
         }
 
         // GET: api/<SimpleSongController>
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<SimpleSongDTO>>> GetSongsAsync()
+        public async Task<ActionResult<IEnumerable<SimpleSongDTO>>> GetSimpleSongsDTOsAsync()
         {
             var songs = await _repository.GetSongsAsync();
-            var songDTOs = _mapper.Map<IEnumerable<StructuredSong>, IEnumerable<SimpleSongDTO>>(songs);
+            var songDTOs = songs.Select(x=>x.AsSimpleSongDTO());
 
             return songDTOs == null ?
                NotFound()
@@ -39,10 +39,10 @@ namespace SongBookService.API.Controllers
 
         // GET api/<SimpleSongController>/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<SimpleSongDTO>> GetSongAsync(Guid id)
+        public async Task<ActionResult<SimpleSongDTO>> GetSimpleSongDTOAsync(Guid id)
         {
             var resultSong = await _repository.GetSongAsync(id);
-            return _mapper.Map<SimpleSongDTO>(resultSong) == null ?
+            return resultSong.AsSimpleSongDTO == null ?
                 NotFound()
                 : Ok(resultSong);
         }

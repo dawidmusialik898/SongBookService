@@ -8,6 +8,7 @@ EXPOSE 443
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
 COPY ["SongBookService.API/SongBookService.API.csproj", "SongBookService.API/"]
+COPY ["SongBook.pfx", .]
 RUN dotnet restore "SongBookService.API/SongBookService.API.csproj"
 COPY . .
 WORKDIR "/src/SongBookService.API"

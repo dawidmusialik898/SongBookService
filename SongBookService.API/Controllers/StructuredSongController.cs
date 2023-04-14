@@ -3,12 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-using AutoMapper;
-
 using Microsoft.AspNetCore.Mvc;
 
 using SongBookService.API.DTOs;
-using SongBookService.API.Models.StructuredSong;
+using SongBookService.API.Extensions.StructuredSongExtensions;
 using SongBookService.API.Repository.StructuredSong;
 
 namespace SongBookService.API.Controllers
@@ -18,36 +16,43 @@ namespace SongBookService.API.Controllers
     public class StructuredSongController : ControllerBase
     {
         private readonly IStructuredSongRepository _repository;
-        private readonly IMapper _mapper;
-        public StructuredSongController(IStructuredSongRepository repository, IMapper mapper)
+        public StructuredSongController(IStructuredSongRepository repository)
         {
             _repository = repository;
-            _mapper = mapper;
         }
 
         /// GET: <SimpleSongsController>
-        [HttpGet]
+        [HttpGet("SongItemList")]
         public async Task<ActionResult<IEnumerable<SongItemListDTO>>> GetSongListItemsAsync()
         {
             var result = await _repository.GetSongsAsync();
             return result == null ?
                 NotFound()
-                : Ok(result.Select(song => _mapper.Map<SongItemListDTO>(song)).OrderBy(s => s.Number));
+                : Ok(result.Select(song => song.AsItemListDTO()).OrderBy(s => s.Number));
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<StructuredSongDTO>>> GetStructuredSongsDTOsAsync()
+        {
+            var result = await _repository.GetSongsAsync();
+            return result == null ?
+                NotFound()
+                : Ok(result.Select(song => song.AsStructuredSongDTO()).OrderBy(s => s.Number));
         }
 
         // GET <SimpleSongsController>/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<StructuredSongDTO>> GetSimpleSongByIdAsync(Guid id)
+        public async Task<ActionResult<StructuredSongDTO>> GetStructuredSongByIdAsync(Guid id)
         {
             var resultSong = await _repository.GetSongAsync(id);
-            return _mapper.Map<StructuredSongDTO>(resultSong) == null ?
+            var resultSongDTO = resultSong.AsStructuredSongDTO();
+            return resultSongDTO == null ?
                 NotFound()
-                : Ok(resultSong);
+                : Ok(resultSongDTO);
         }
 
-        // POST <SimpleSongsController>
         [HttpPost]
-        public async Task<ActionResult> AddFullSongAsync([FromBody] StructuredSongDTO songDTO)
+        public async Task<ActionResult> AddStructuredSongAsync([FromBody] StructuredSongDTO songDTO)
         {
             var dbsong = await _repository.GetSongAsync(songDTO.Id);
             if (dbsong != null)
@@ -55,15 +60,15 @@ namespace SongBookService.API.Controllers
                 return BadRequest("Song with this id already exists in database.");
             }
 
-            await _repository.AddSongAsync(_mapper.Map<StructuredSong>(songDTO));
+            await _repository.AddSongAsync(songDTO.AsStructuredSong());
             return Ok();
         }
 
         [HttpPut]
-        public async Task<ActionResult> ModifyFullSongAsync([FromBody] StructuredSongDTO songDTO)
+        public async Task<ActionResult> ModifyStructuredSongAsync([FromBody] StructuredSongDTO songDTO)
         {
             var dbsong = await _repository.GetSongAsync(songDTO.Id);
-            var song = _mapper.Map<StructuredSong>(songDTO);
+            var song = songDTO.AsStructuredSong();
             if (dbsong != null)
             {
                 await _repository.UpdateSongAsync(song);

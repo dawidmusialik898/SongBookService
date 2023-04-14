@@ -50,7 +50,7 @@ namespace SongBookService.API.DbInitializers.FullSong
                 Title = string.IsNullOrEmpty(title) ? null : new(title),
                 DistinctParts = GetParts(xmlSong.SelectNodes(@".//Slide"))
             };
-            CollapseSlidesIntoParts(outputSong);
+            //CollapseSlidesIntoParts(outputSong);
             MakePartUnique(outputSong);
             return outputSong;
         }

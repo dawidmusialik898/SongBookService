@@ -10,7 +10,7 @@ namespace SongBookService.API.DbInitializers.StructuredSong
 {
     public class SneStructuredSongsFromXmlInitializer : IStructuredSongDbInitializer
     {
-        private readonly string _filepath = @"snesongs.xml";
+        private const string _filepath = @"snesongs.xml";
         public IEnumerable<Models.StructuredSong.StructuredSong> GetSongs()
         {
             if (!File.Exists(_filepath))
@@ -47,7 +47,8 @@ namespace SongBookService.API.DbInitializers.StructuredSong
                 OriginalTitle = null,
                 Number = string.IsNullOrEmpty(songNumberString) ? null : new(songNumberString),
                 Title = string.IsNullOrEmpty(title) ? null : new(title),
-                Parts = GetParts(xmlSong.SelectNodes(@".//Slide"))
+                Parts = GetParts(xmlSong.SelectNodes(@".//Slide")),
+                PartOrder = new(),
             };
             MakePartUnique(outputSong);
             return outputSong;
@@ -101,7 +102,8 @@ namespace SongBookService.API.DbInitializers.StructuredSong
             {
                 Name = string.IsNullOrEmpty(partname) ? null : new(partname),
                 Id = Guid.NewGuid(),
-                Slides = new()
+                Slides = new(),
+                SlideOrder = new(),
             };
             outputPart.Slides.Add(GetSlide(xmlSongPart.SelectSingleNode(@".//Text")?.InnerText));
             MakeSlidesUnique(outputPart);

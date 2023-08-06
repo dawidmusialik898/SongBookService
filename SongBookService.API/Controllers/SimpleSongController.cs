@@ -20,10 +20,8 @@ namespace SongBookService.API.Controllers
     {
         private readonly IStructuredSongRepository _repository;
 
-        public SimpleSongController(IStructuredSongRepository repository)
-        {
-            _repository = repository;
-        }
+        public SimpleSongController(IStructuredSongRepository repository) 
+            => _repository = repository;
 
         // GET: api/<SimpleSongController>
         [HttpGet]

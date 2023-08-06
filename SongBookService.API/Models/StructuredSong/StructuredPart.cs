@@ -21,8 +21,8 @@ namespace SongBookService.API.Models.StructuredSong
         /// <summary>
         /// List of distinct slides.
         /// </summary>
-        public List<StructuredSlide> Slides { get; set; } = new();
-        public List<Guid> SlideOrder { get; set; } = new();
+        public List<StructuredSlide> Slides { get; set; }
+        public List<Guid> SlideOrder { get; set; }
 
         public string GetText()
         {

@@ -72,11 +72,9 @@ namespace SongBookService.API.Repository.StructuredSong
 
             var song = await _songCollection.FindAsync(x => x.Id == id);
             var songList = song.ToList();
-            if (!songList.Any())
-            {
-                throw new Exception($"Song with this Id: {id}, does not exist in database");
-            }
-            return songList.First();
+            return songList.Count == 0 ? 
+                throw new Exception($"Song with this Id: {id}, does not exist in database") : 
+                songList.First();
         }
         public async Task<IEnumerable<Models.StructuredSong.StructuredSong>> GetSongsAsync()
         {

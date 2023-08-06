@@ -15,14 +15,14 @@ namespace SongBookService.API.DTOs
         public List<StructuredSlideDTO> Slides{ get; init; }
     }
 
-    public record StructuredPartDTO
+    public record struct StructuredPartDTO
     {
         public Guid Id { get; init; }
         public string Name { get; init; }
         public List<Guid> SlideOrder { get; init; }
     }
 
-    public record StructuredSlideDTO
+    public record struct StructuredSlideDTO
     {
         public Guid Id { get; init; }
         public string Text { get; init; }

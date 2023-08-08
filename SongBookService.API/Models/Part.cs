@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace SongBookService.API.Models.Song
+namespace SongBookService.API.Models
 {
     public class Part
     {
@@ -24,7 +24,7 @@ namespace SongBookService.API.Models.Song
 
         public string GetText()
         {
-            var slides = SlideOrder.Select(x => Slides.Where(y => y.Id == x).First()).Select(z=>z.Text);
+            var slides = SlideOrder.Select(x => Slides.Where(y => y.Id == x).First()).Select(z => z.Text);
             return string.Join(Environment.NewLine, slides);
         }
     }

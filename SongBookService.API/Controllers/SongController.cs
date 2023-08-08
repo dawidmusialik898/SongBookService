@@ -33,10 +33,9 @@ namespace SongBookService.API.Controllers
         public async Task<ActionResult<SongDTO>> GetSongByIdAsync(Guid id)
         {
             var resultSong = await _repository.GetSongAsync(id);
-            var resultSongDTO = resultSong.AsStructuredSongDTO();
-            return resultSongDTO is null ?
+            return resultSong is null ?
                 NotFound()
-                : Ok(resultSongDTO);
+                : Ok(resultSong.AsStructuredSongDTO());
         }
 
         [HttpPost]

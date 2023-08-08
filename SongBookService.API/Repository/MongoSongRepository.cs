@@ -8,7 +8,7 @@ using MongoDB.Driver;
 
 using SongBookService.API.DbInitializers;
 
-namespace SongBookService.API.Repository.Song
+namespace SongBookService.API.Repository
 {
     public class MongoSongRepository : ISongRepository
     {

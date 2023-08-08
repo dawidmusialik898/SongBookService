@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SongBookService.API.Models.Song
+namespace SongBookService.API.Models
 {
     public class Slide
     {

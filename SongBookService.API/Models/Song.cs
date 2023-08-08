@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace SongBookService.API.Models.Song
+namespace SongBookService.API.Models
 {
     public class Song
     {

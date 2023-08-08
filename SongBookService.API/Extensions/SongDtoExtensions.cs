@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 
 using SongBookService.API.DTOs;
-using SongBookService.API.Models.Song;
+using SongBookService.API.Models;
 
 namespace SongBookService.API.Extensions
 {

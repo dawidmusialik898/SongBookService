@@ -9,11 +9,8 @@ using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
 
-using SongBookService.API.DbInitializers.FullSong;
-using SongBookService.API.DbInitializers.StructuredSong;
-using SongBookService.API.Repository.FullSong;
-using SongBookService.API.Repository.FullSsong;
-using SongBookService.API.Repository.StructuredSong;
+using SongBookService.API.DbInitializers;
+using SongBookService.API.Repository;
 
 namespace SongBookService.API
 {
@@ -33,10 +30,9 @@ namespace SongBookService.API
             var connectionString = Configuration.GetConnectionString("Default");
 
             services.AddSingleton<IMongoClient>(serviceProvider => new MongoClient(connectionString));
-            services.AddSingleton<IFullSongDbInitializer, SneFullSongsFromXmlInitializer>();
             services.AddSingleton<ISongRepository, MongoSongRepository>();
-            services.AddSingleton<IStructuredSongDbInitializer, SneStructuredSongsFromXmlInitializer>();
-            services.AddSingleton<IStructuredSongRepository, MongoStructuredSongRepository>();
+            services.AddSingleton<ISongDbInitializer, SneSongsFromXmlInitializer>();
+            services.AddSingleton<ISongRepository, MongoSongRepository>();
 
             services.AddControllers(options =>
                 options.SuppressAsyncSuffixInActionNames = false);
@@ -52,7 +48,7 @@ namespace SongBookService.API
                 x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
                 x.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-            }).AddJwtBearer(x =>
+            }).AddJwtBearer(x => x.TokenValidationParameters = new()
             {
 
             });

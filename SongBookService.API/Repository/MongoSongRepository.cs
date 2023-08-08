@@ -6,22 +6,22 @@ using System.Threading.Tasks;
 using MongoDB.Bson;
 using MongoDB.Driver;
 
-using SongBookService.API.DbInitializers.StructuredSong;
+using SongBookService.API.DbInitializers;
 
-namespace SongBookService.API.Repository.StructuredSong
+namespace SongBookService.API.Repository
 {
-    public class MongoStructuredSongRepository : IStructuredSongRepository
+    public class MongoSongRepository : ISongRepository
     {
         private const string _databaseName = "SongBook";
         private const string _collectionName = "SimpleSongs";
-        private readonly IMongoCollection<Models.StructuredSong.StructuredSong> _songCollection;
-        private readonly FilterDefinitionBuilder<Models.StructuredSong.StructuredSong> _filterBuilder = Builders<Models.StructuredSong.StructuredSong>.Filter;
+        private readonly IMongoCollection<Models.Song> _songCollection;
+        private readonly FilterDefinitionBuilder<Models.Song> _filterBuilder = Builders<Models.Song>.Filter;
 
-        public MongoStructuredSongRepository(IMongoClient mongoClient, IStructuredSongDbInitializer initializer)
+        public MongoSongRepository(IMongoClient mongoClient, ISongDbInitializer initializer)
         {
             var database = mongoClient.GetDatabase(_databaseName);
 
-            _songCollection = database.GetCollection<Models.StructuredSong.StructuredSong>(_collectionName);
+            _songCollection = database.GetCollection<Models.Song>(_collectionName);
 
             var songs = _songCollection.Find(new BsonDocument()).ToList();
             if (!songs.Any())
@@ -29,7 +29,7 @@ namespace SongBookService.API.Repository.StructuredSong
                 _songCollection.InsertMany(initializer.GetSongs());
             }
         }
-        public async Task AddSongAsync(Models.StructuredSong.StructuredSong song)
+        public async Task AddSongAsync(Models.Song song)
         {
             if (song is null)
             {
@@ -67,21 +67,21 @@ namespace SongBookService.API.Repository.StructuredSong
             }
         }
 
-        public async Task<Models.StructuredSong.StructuredSong> GetSongAsync(Guid id)
+        public async Task<Models.Song> GetSongAsync(Guid id)
         {
 
             var song = await _songCollection.FindAsync(x => x.Id == id);
             var songList = song.ToList();
-            return songList.Count == 0 ? 
-                throw new Exception($"Song with this Id: {id}, does not exist in database") : 
+            return songList.Count == 0 ?
+                throw new Exception($"Song with this Id: {id}, does not exist in database") :
                 songList.First();
         }
-        public async Task<IEnumerable<Models.StructuredSong.StructuredSong>> GetSongsAsync()
+        public async Task<IEnumerable<Models.Song>> GetSongsAsync()
         {
             var songs = await _songCollection.FindAsync(new BsonDocument());
             return await songs.ToListAsync();
         }
-        public async Task UpdateSongAsync(Models.StructuredSong.StructuredSong modifiedSong)
+        public async Task UpdateSongAsync(Models.Song modifiedSong)
         {
             var filter = _filterBuilder.Eq(existingItem => existingItem.Id, modifiedSong.Id);
             var songToBeReplacedAsyncCursor = await _songCollection.FindAsync(filter);

@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace SongBookService.API.Models.StructuredSong
+namespace SongBookService.API.Models
 {
-    public class StructuredSlide
+    public class Slide
     {
         public Guid Id { get; set; }
         public string Text { get; set; }

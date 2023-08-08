@@ -6,31 +6,21 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 
 using SongBookService.API.DTOs;
-using SongBookService.API.Extensions.StructuredSongExtensions;
-using SongBookService.API.Repository.StructuredSong;
+using SongBookService.API.Extensions;
+using SongBookService.API.Repository;
 
 namespace SongBookService.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class StructuredSongController : ControllerBase
+    public class SongController : ControllerBase
     {
-        private readonly IStructuredSongRepository _repository;
-        public StructuredSongController(IStructuredSongRepository repository) 
+        private readonly ISongRepository _repository;
+        public SongController(ISongRepository repository) 
             => _repository = repository;
 
-        /// GET: <SimpleSongsController>
-        [HttpGet("SongItemList")]
-        public async Task<ActionResult<IEnumerable<SongItemListDTO>>> GetSongListItemsAsync()
-        {
-            var result = await _repository.GetSongsAsync();
-            return result is null ?
-                NotFound()
-                : Ok(result.Select(song => song.AsItemListDTO()).OrderBy(s => s.Number));
-        }
-
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<StructuredSongDTO>>> GetStructuredSongsDTOsAsync()
+        public async Task<ActionResult<IEnumerable<SongDTO>>> GetSongsDTOsAsync()
         {
             var result = await _repository.GetSongsAsync();
             return result is null ?
@@ -40,17 +30,16 @@ namespace SongBookService.API.Controllers
 
         // GET <SimpleSongsController>/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<StructuredSongDTO>> GetStructuredSongByIdAsync(Guid id)
+        public async Task<ActionResult<SongDTO>> GetSongByIdAsync(Guid id)
         {
             var resultSong = await _repository.GetSongAsync(id);
-            var resultSongDTO = resultSong.AsStructuredSongDTO();
-            return resultSongDTO is null ?
+            return resultSong is null ?
                 NotFound()
-                : Ok(resultSongDTO);
+                : Ok(resultSong.AsStructuredSongDTO());
         }
 
         [HttpPost]
-        public async Task<ActionResult> AddStructuredSongAsync([FromBody] StructuredSongDTO songDTO)
+        public async Task<ActionResult> AddSongAsync([FromBody] SongDTO songDTO)
         {
             var dbsong = await _repository.GetSongAsync(songDTO.Id);
             if (dbsong is not null)
@@ -63,7 +52,7 @@ namespace SongBookService.API.Controllers
         }
 
         [HttpPut]
-        public async Task<ActionResult> ModifyStructuredSongAsync([FromBody] StructuredSongDTO songDTO)
+        public async Task<ActionResult> ModifySongAsync([FromBody] SongDTO songDTO)
         {
             var dbsong = await _repository.GetSongAsync(songDTO.Id);
             var song = songDTO.AsStructuredSong();

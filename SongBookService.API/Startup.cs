@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,11 +9,8 @@ using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
 
-using SongBookService.API.DbInitializers.FullSong;
-using SongBookService.API.DbInitializers.StructuredSong;
-using SongBookService.API.Repository.FullSong;
-using SongBookService.API.Repository.FullSsong;
-using SongBookService.API.Repository.StructuredSong;
+using SongBookService.API.DbInitializers;
+using SongBookService.API.Repository;
 
 namespace SongBookService.API
 {
@@ -32,10 +30,9 @@ namespace SongBookService.API
             var connectionString = Configuration.GetConnectionString("Default");
 
             services.AddSingleton<IMongoClient>(serviceProvider => new MongoClient(connectionString));
-            services.AddSingleton<IFullSongDbInitializer, SneFullSongsFromXmlInitializer>();
             services.AddSingleton<ISongRepository, MongoSongRepository>();
-            services.AddSingleton<IStructuredSongDbInitializer, SneStructuredSongsFromXmlInitializer>();
-            services.AddSingleton<IStructuredSongRepository, MongoStructuredSongRepository>();
+            services.AddSingleton<ISongDbInitializer, SneSongsFromXmlInitializer>();
+            services.AddSingleton<ISongRepository, MongoSongRepository>();
 
             services.AddControllers(options =>
                 options.SuppressAsyncSuffixInActionNames = false);
@@ -45,6 +42,16 @@ namespace SongBookService.API
 
             services.AddCors(options => options.AddPolicy(corsPolicy,
                                   policy => policy.WithOrigins(/*"http://192.168.176.1:4200",*/ "http://localhost:4200")));
+
+            services.AddAuthentication(x =>
+            {
+                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                x.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(x => x.TokenValidationParameters = new()
+            {
+
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -59,8 +66,10 @@ namespace SongBookService.API
             app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "SongBookService.API v1"));
 
             app.UseRouting();
-            
+
             app.UseCors();
+
+            app.UseAuthentication();
 
             app.UseAuthorization();
 

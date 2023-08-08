@@ -2,11 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 
-using SongBookService.API.Models.ValueObjects;
-
-namespace SongBookService.API.Models.StructuredSong
+namespace SongBookService.API.Models.Song
 {
-    public class StructuredPart
+    public class Part
     {
         /// <summary>
         /// Part id.
@@ -21,7 +19,7 @@ namespace SongBookService.API.Models.StructuredSong
         /// <summary>
         /// List of distinct slides.
         /// </summary>
-        public List<StructuredSlide> Slides { get; set; }
+        public List<Slide> Slides { get; set; }
         public List<Guid> SlideOrder { get; set; }
 
         public string GetText()

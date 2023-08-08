@@ -1,47 +1,47 @@
 ﻿using System.Linq;
 
 using SongBookService.API.DTOs;
-using SongBookService.API.Models.StructuredSong;
+using SongBookService.API.Models.Song;
 
-namespace SongBookService.API.Extensions.StructuredSongExtensions
+namespace SongBookService.API.Extensions
 {
-    public static class StructuredDTOExtensins
+    public static class SongDtoExtensions
     {
-        public static StructuredSongDTO AsStructuredSongDTO(this StructuredSong song)
+        public static SongDTO AsStructuredSongDTO(this Song song)
         {
-            return new StructuredSongDTO()
+            return new SongDTO()
             {
                 Id = song.Id,
                 Number = song.Number,
                 Title = song.Title,
-                OriginalTitle= song.OriginalTitle,
-                Author= song.Author,
+                OriginalTitle = song.OriginalTitle,
+                Author = song.Author,
                 PartOrder = song.PartOrder.ToList(),
                 Parts = song.Parts.Select(p => p.AsStructuredPartDTO()).ToList(),
                 Slides = song.Parts.SelectMany(x => x.Slides.Select(slide => slide.AsStructuredSlideDTO())).ToList(),
             };
         }
-        private static StructuredPartDTO AsStructuredPartDTO(this StructuredPart part)
+        private static PartDTO AsStructuredPartDTO(this Part part)
         {
 
-            return new StructuredPartDTO()
+            return new PartDTO()
             {
                 Id = part.Id,
                 Name = part.Name,
                 SlideOrder = part.SlideOrder,
             };
         }
-        private static StructuredSlideDTO AsStructuredSlideDTO(this StructuredSlide slide)
+        private static SlideDTO AsStructuredSlideDTO(this Slide slide)
         {
-            return new StructuredSlideDTO()
+            return new SlideDTO()
             {
                 Id = slide.Id,
                 Text = slide.Text,
             };
         }
-        public static StructuredSong AsStructuredSong(this StructuredSongDTO structuredSong)
+        public static Song AsStructuredSong(this SongDTO structuredSong)
         {
-            return new StructuredSong()
+            return new Song()
             {
                 Id = structuredSong.Id,
                 Number = structuredSong.Number,
@@ -49,13 +49,13 @@ namespace SongBookService.API.Extensions.StructuredSongExtensions
                 Parts = structuredSong.Parts.Select(p => p.AsStructuredPart(structuredSong)).ToList(),
                 PartOrder = structuredSong.PartOrder,
                 Author = null,
-                Key = 0,
+                Key = "",
                 OriginalTitle = null,
             };
         }
-        private static StructuredPart AsStructuredPart(this StructuredPartDTO structuredPart, StructuredSongDTO structuredSong)
+        private static Part AsStructuredPart(this PartDTO structuredPart, SongDTO structuredSong)
         {
-            return new StructuredPart()
+            return new Part()
             {
                 Id = structuredPart.Id,
                 Name = string.IsNullOrEmpty(structuredPart.Name) ? null : structuredPart.Name,
@@ -63,9 +63,9 @@ namespace SongBookService.API.Extensions.StructuredSongExtensions
                 SlideOrder = structuredPart.SlideOrder,
             };
         }
-        private static StructuredSlide AsSlide(this StructuredSlideDTO structuredSlide)
+        private static Slide AsSlide(this SlideDTO structuredSlide)
         {
-            return new StructuredSlide()
+            return new Slide()
             {
                 Id = structuredSlide.Id,
                 Text = structuredSlide.Text,

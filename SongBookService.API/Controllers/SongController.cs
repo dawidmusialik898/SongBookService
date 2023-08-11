@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 using SongBookService.API.DTOs;
@@ -16,16 +17,21 @@ namespace SongBookService.API.Controllers
     public class SongController : ControllerBase
     {
         private readonly ISongRepository _repository;
-        public SongController(ISongRepository repository) 
+        public SongController(ISongRepository repository)
             => _repository = repository;
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<SongDTO>>> GetSongsDTOsAsync()
+        public async Task<ActionResult<IEnumerable<SongDTO>>> GetSongsAsync()
         {
-            var result = await _repository.GetSongsAsync();
-            return result is null ?
-                NotFound()
-                : Ok(result.Select(song => song.AsStructuredSongDTO()).OrderBy(s => s.Number));
+            try
+            {
+                var songs = await _repository.GetSongsAsync();
+                return Ok(songs?.Select(song => song.AsStructuredSongDTO()).OrderBy(s => s.Number));
+            }
+            catch(Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
         }
 
         // GET <SimpleSongsController>/5

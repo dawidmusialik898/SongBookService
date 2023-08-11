@@ -69,9 +69,9 @@ namespace SongBookService.API
 
             app.UseCors();
 
-            app.UseAuthentication();
+            //app.UseAuthentication();
 
-            app.UseAuthorization();
+            //app.UseAuthorization();
 
             app.UseEndpoints(endpoints
                 => endpoints.MapControllers().RequireCors(corsPolicy));

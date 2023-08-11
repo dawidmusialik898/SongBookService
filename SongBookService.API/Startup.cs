@@ -41,7 +41,7 @@ namespace SongBookService.API
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "SongBookService.API", Version = "v1" }));
 
             services.AddCors(options => options.AddPolicy(corsPolicy,
-                                  policy => policy.WithOrigins(/*"http://192.168.176.1:4200",*/ "http://localhost:4200")));
+                                  policy => policy.WithOrigins("http://192.168.176.1:4200", "http://localhost:4200", "https://localhost:8089/swagger/index.html")));
 
             services.AddAuthentication(x =>
             {

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 using SongBookService.API.DTOs;
 using SongBookService.API.Extensions;
@@ -17,8 +18,12 @@ namespace SongBookService.API.Controllers
     public class SongController : ControllerBase
     {
         private readonly ISongRepository _repository;
-        public SongController(ISongRepository repository)
-            => _repository = repository;
+        private readonly ILogger<SongController> _logger;
+        public SongController(ISongRepository repository, ILogger<SongController> logger)
+        {
+            _repository = repository;
+            _logger = logger;
+        }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<SongDTO>>> GetSongs()
@@ -30,7 +35,8 @@ namespace SongBookService.API.Controllers
             }
             catch(Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+                _logger.LogError("Error when processing get songs request. Message:{message}. Stack trace: {stackTrace}", ex.Message, ex.StackTrace);
+                return StatusCode(StatusCodes.Status500InternalServerError, "Error while getting songs collection occured.");
             }
         }
 
@@ -38,10 +44,17 @@ namespace SongBookService.API.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<SongDTO>> GetSongById(Guid id)
         {
-            var resultSong = await _repository.GetSong(id);
-            return resultSong is null ?
-                NotFound()
-                : Ok(resultSong.AsStructuredSongDTO());
+            try
+            {
+                var resultSong = await _repository.GetSong(id);
+                return resultSong is null ?
+                    NotFound()
+                    : Ok(resultSong.AsStructuredSongDTO());
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
         }
 
         [HttpPost]

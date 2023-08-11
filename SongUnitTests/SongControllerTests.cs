@@ -31,11 +31,11 @@ namespace SongUnitTests
         [Fact]
         public async Task GetSongs_ShouldReturnStatusCode200AndSongs_WhenSongsAreInDatabase()
         {
-            _songRepository.GetSongsAsync().Returns(Task.FromResult<IEnumerable<Song>>(_songMock.SongGenerator.Generate(10)));
+            _songRepository.GetSongs().Returns(Task.FromResult<IEnumerable<Song>>(_songMock.SongGenerator.Generate(10)));
 
             _sut.ControllerContext = Substitute.For<ControllerContext>();
 
-            var actionResult = await _sut.GetSongsAsync();
+            var actionResult = await _sut.GetSongs();
 
             actionResult.Result.Should().BeOfType<OkObjectResult>();
 
@@ -52,11 +52,11 @@ namespace SongUnitTests
         public async Task GetSongs_ShouldReturnStatusCode200AndSongs_WhenThereIsNoSongsInDataBase(bool isNull)
         {
             var songs = isNull ? null : Array.Empty<Song>();
-            _songRepository.GetSongsAsync().Returns(Task.FromResult<IEnumerable<Song>>(songs));
+            _songRepository.GetSongs().Returns(Task.FromResult<IEnumerable<Song>>(songs));
 
             _sut.ControllerContext = Substitute.For<ControllerContext>();
 
-            var actionResult = await _sut.GetSongsAsync();
+            var actionResult = await _sut.GetSongs();
 
             actionResult.Result.Should().BeOfType<OkObjectResult>();
 
@@ -68,11 +68,11 @@ namespace SongUnitTests
         [Fact]
         public async Task GetSongs_ShouldReturnInternalServerError_WhenSongRepositoryThrowsAnError()
         {
-            _songRepository.GetSongsAsync().Throws(new Exception("Any Error"));
+            _songRepository.GetSongs().Throws(new Exception("Any Error"));
 
             _sut.ControllerContext = Substitute.For<ControllerContext>();
 
-            var actionResult = await _sut.GetSongsAsync();
+            var actionResult = await _sut.GetSongs();
 
             var result = actionResult.Result as ObjectResult;
 

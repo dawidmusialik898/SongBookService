@@ -21,11 +21,11 @@ namespace SongBookService.API.Controllers
             => _repository = repository;
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<SongDTO>>> GetSongsAsync()
+        public async Task<ActionResult<IEnumerable<SongDTO>>> GetSongs()
         {
             try
             {
-                var songs = await _repository.GetSongsAsync();
+                var songs = await _repository.GetSongs();
                 return Ok(songs?.Select(song => song.AsStructuredSongDTO()).OrderBy(s => s.Number));
             }
             catch(Exception ex)
@@ -36,53 +36,53 @@ namespace SongBookService.API.Controllers
 
         // GET <SimpleSongsController>/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<SongDTO>> GetSongByIdAsync(Guid id)
+        public async Task<ActionResult<SongDTO>> GetSongById(Guid id)
         {
-            var resultSong = await _repository.GetSongAsync(id);
+            var resultSong = await _repository.GetSong(id);
             return resultSong is null ?
                 NotFound()
                 : Ok(resultSong.AsStructuredSongDTO());
         }
 
         [HttpPost]
-        public async Task<ActionResult> AddSongAsync([FromBody] SongDTO songDTO)
+        public async Task<ActionResult> AddSong([FromBody] SongDTO songDTO)
         {
-            var dbsong = await _repository.GetSongAsync(songDTO.Id);
+            var dbsong = await _repository.GetSong(songDTO.Id);
             if (dbsong is not null)
             {
                 return BadRequest("Song with this id already exists in database.");
             }
 
-            await _repository.AddSongAsync(songDTO.AsStructuredSong());
+            await _repository.AddSong(songDTO.AsStructuredSong());
             return Ok();
         }
 
         [HttpPut]
-        public async Task<ActionResult> ModifySongAsync([FromBody] SongDTO songDTO)
+        public async Task<ActionResult> ModifySong([FromBody] SongDTO songDTO)
         {
-            var dbsong = await _repository.GetSongAsync(songDTO.Id);
+            var dbsong = await _repository.GetSong(songDTO.Id);
             var song = songDTO.AsStructuredSong();
             if (dbsong is not null)
             {
-                await _repository.UpdateSongAsync(song);
+                await _repository.UpdateSong(song);
             }
             else
             {
-                await _repository.AddSongAsync(song);
+                await _repository.AddSong(song);
             }
             return Ok();
         }
 
         /// DELETE <SimpleSongsController>/5
         [HttpDelete]
-        public async Task<ActionResult> DeleteSongAsync(Guid id)
+        public async Task<ActionResult> DeleteSong(Guid id)
         {
-            var result = await _repository.GetSongAsync(id);
+            var result = await _repository.GetSong(id);
             if (result is null)
             {
                 return NotFound();
             }
-            await _repository.DeleteSongAsync(id);
+            await _repository.DeleteSong(id);
             return Ok();
         }
     }

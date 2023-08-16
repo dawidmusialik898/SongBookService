@@ -1,13 +1,11 @@
 using FluentAssertions;
 
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
-using NSubstitute.Extensions;
 using NSubstitute.ReturnsExtensions;
 
 using SongBookService.API.Controllers;

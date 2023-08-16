@@ -33,7 +33,7 @@ namespace SongBookService.API.Controllers
                 var songs = await _repository.GetSongs();
                 return Ok(songs?.Select(song => song.AsStructuredSongDTO()).OrderBy(s => s.Number));
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.LogError("Error when processing get songs request. Message:{message}. Stack trace: {stackTrace}", ex.Message, ex.StackTrace);
                 return StatusCode(StatusCodes.Status500InternalServerError, "Error while getting songs collection occured.");
@@ -48,7 +48,7 @@ namespace SongBookService.API.Controllers
             {
                 var resultSong = await _repository.GetSong(id);
                 return resultSong is null ?
-                    NotFound()
+                    NotFound($"Song with id{id} not found.")
                     : Ok(resultSong.AsStructuredSongDTO());
             }
             catch (Exception ex)
@@ -60,43 +60,64 @@ namespace SongBookService.API.Controllers
         [HttpPost]
         public async Task<ActionResult> AddSong([FromBody] SongDTO songDTO)
         {
-            var dbsong = await _repository.GetSong(songDTO.Id);
-            if (dbsong is not null)
+            try
             {
-                return BadRequest("Song with this id already exists in database.");
-            }
+                var dbsong = await _repository.GetSong(songDTO.Id);
+                if (dbsong is not null)
+                {
+                    return BadRequest("Song with this id already exists in database.");
+                }
 
-            await _repository.AddSong(songDTO.AsStructuredSong());
-            return Ok();
+                await _repository.AddSong(songDTO.AsStructuredSong());
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
         }
 
         [HttpPut]
         public async Task<ActionResult> ModifySong([FromBody] SongDTO songDTO)
         {
-            var dbsong = await _repository.GetSong(songDTO.Id);
-            var song = songDTO.AsStructuredSong();
-            if (dbsong is not null)
+            try
             {
-                await _repository.UpdateSong(song);
+                var dbsong = await _repository.GetSong(songDTO.Id);
+                var song = songDTO.AsStructuredSong();
+                if (dbsong is not null)
+                {
+                    await _repository.UpdateSong(song);
+                }
+                else
+                {
+                    await _repository.AddSong(song);
+                }
+                return Ok();
             }
-            else
+            catch (Exception ex)
             {
-                await _repository.AddSong(song);
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
-            return Ok();
         }
 
         /// DELETE <SimpleSongsController>/5
         [HttpDelete]
         public async Task<ActionResult> DeleteSong(Guid id)
         {
-            var result = await _repository.GetSong(id);
-            if (result is null)
+            try
             {
-                return NotFound();
+                var result = await _repository.GetSong(id);
+                if (result is null)
+                {
+                    return NotFound();
+                }
+                await _repository.DeleteSong(id);
+                return Ok();
             }
-            await _repository.DeleteSong(id);
-            return Ok();
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
         }
     }
 }

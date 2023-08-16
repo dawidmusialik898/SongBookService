@@ -73,7 +73,7 @@ namespace SongBookService.API.Repository
             var song = await _songCollection.FindAsync(x => x.Id == id);
             var songList = song.ToList();
             return songList.Count == 0 ?
-                throw new Exception($"Song with this Id: {id}, does not exist in database") :
+                null :
                 songList.First();
         }
         public async Task<IEnumerable<Models.Song>> GetSongs()

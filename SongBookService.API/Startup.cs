@@ -11,37 +11,34 @@ using MongoDB.Driver;
 
 using SongBookService.API.DbInitializers;
 using SongBookService.API.Repository;
+using SongBookService.API.Options;
+using Microsoft.AspNetCore.Routing;
 
 namespace SongBookService.API
 {
     public class Startup
     {
-        private const string corsPolicy = "CorsPolicy";
         public Startup(IConfiguration configuration)
             => Configuration = configuration;
 
         public IConfiguration Configuration { get; }
+        private Options.CorsPolicy cors;
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            BsonSerializer.RegisterSerializer(new GuidSerializer(BsonType.String));
-            BsonSerializer.RegisterSerializer(new DateTimeOffsetSerializer(BsonType.String));
-            var connectionString = Configuration.GetConnectionString("Default");
+            AddMongoClient(services);
+            AddOptions(services);
+            RegisterServices(services);
 
-            services.AddSingleton<IMongoClient>(serviceProvider => new MongoClient(connectionString));
-            services.AddSingleton<ISongRepository, MongoSongRepository>();
-            services.AddSingleton<ISongDbInitializer, SneSongsFromXmlInitializer>();
-            services.AddSingleton<ISongRepository, MongoSongRepository>();
+            services.Configure<RouteOptions>(options => options.LowercaseUrls = true);
 
-            services.AddControllers(options =>
-                options.SuppressAsyncSuffixInActionNames = false);
+            services.AddControllers(options => options.SuppressAsyncSuffixInActionNames = true);
 
             services.AddSwaggerGen(c =>
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "SongBookService.API", Version = "v1" }));
 
-            services.AddCors(options => options.AddPolicy(corsPolicy,
-                                  policy => policy.WithOrigins(/*"http://192.168.176.1:4200",*/ "http://localhost:4200")));
+            AddCorsPolicy(services);
 
             services.AddAuthentication(x =>
             {
@@ -52,6 +49,32 @@ namespace SongBookService.API
             {
 
             });
+        }
+
+        private void AddCorsPolicy(IServiceCollection services)
+        {
+            cors = Configuration.GetSection("CorsPolicy").Get<Options.CorsPolicy>();
+            services.AddCors(options => options.AddPolicy(cors.Name,
+                                   policy => policy.WithOrigins(cors.Origins)));
+        }
+
+        private void AddOptions(IServiceCollection services)
+        {
+            services.Configure<SongRepositoryOptions>(Configuration.GetSection(nameof(SongRepositoryOptions)));
+        }
+
+        private static void RegisterServices(IServiceCollection services)
+        {
+            services.AddSingleton<ISongRepository, MongoSongRepository>();
+            services.AddSingleton<ISongDbInitializer, SneSongsFromXmlInitializer>();
+            services.AddSingleton<ISongRepository, MongoSongRepository>();
+        }
+
+        private void AddMongoClient(IServiceCollection services)
+        {
+            BsonSerializer.RegisterSerializer(new GuidSerializer(BsonType.String));
+            BsonSerializer.RegisterSerializer(new DateTimeOffsetSerializer(BsonType.String));
+            services.AddSingleton<IMongoClient>(serviceProvider => new MongoClient(Configuration.GetConnectionString("SongsDb")));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -69,12 +92,12 @@ namespace SongBookService.API
 
             app.UseCors();
 
-            app.UseAuthentication();
+            //app.UseAuthentication();
 
-            app.UseAuthorization();
+            //app.UseAuthorization();
 
             app.UseEndpoints(endpoints
-                => endpoints.MapControllers().RequireCors(corsPolicy));
+                => endpoints.MapControllers().RequireCors(cors.Name));
 
         }
     }

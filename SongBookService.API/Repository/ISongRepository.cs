@@ -8,10 +8,10 @@ namespace SongBookService.API.Repository
 {
     public interface ISongRepository
     {
-        public Task AddSongAsync(Song song);
-        public Task UpdateSongAsync(Song modifiedSong);
-        public Task DeleteSongAsync(Guid id);
-        public Task<Song> GetSongAsync(Guid id);
-        public Task<IEnumerable<Song>> GetSongsAsync();
+        public Task AddSong(Song song);
+        public Task UpdateSong(Song modifiedSong);
+        public Task DeleteSong(Guid id);
+        public Task<Song> GetSong(Guid id);
+        public Task<IEnumerable<Song>> GetSongs();
     }
 }

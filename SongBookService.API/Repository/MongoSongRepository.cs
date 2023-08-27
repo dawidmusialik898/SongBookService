@@ -3,25 +3,29 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
+using Microsoft.Extensions.Options;
+
 using MongoDB.Bson;
 using MongoDB.Driver;
 
 using SongBookService.API.DbInitializers;
+using SongBookService.API.Options;
 
 namespace SongBookService.API.Repository
 {
     public class MongoSongRepository : ISongRepository
     {
-        private const string _databaseName = "SongBook";
-        private const string _collectionName = "SimpleSongs";
         private readonly IMongoCollection<Models.Song> _songCollection;
         private readonly FilterDefinitionBuilder<Models.Song> _filterBuilder = Builders<Models.Song>.Filter;
 
-        public MongoSongRepository(IMongoClient mongoClient, ISongDbInitializer initializer)
+        public MongoSongRepository(
+            IMongoClient mongoClient,
+            ISongDbInitializer initializer,
+            IOptions<SongRepositoryOptions> songRepositoryOptions)
         {
-            var database = mongoClient.GetDatabase(_databaseName);
+            var database = mongoClient.GetDatabase(songRepositoryOptions.Value.DatabaseName);
 
-            _songCollection = database.GetCollection<Models.Song>(_collectionName);
+            _songCollection = database.GetCollection<Models.Song>(songRepositoryOptions.Value.CollectionName);
 
             var songs = _songCollection.Find(new BsonDocument()).ToList();
             if (!songs.Any())
@@ -29,7 +33,8 @@ namespace SongBookService.API.Repository
                 _songCollection.InsertMany(initializer.GetSongs());
             }
         }
-        public async Task AddSongAsync(Models.Song song)
+
+        public async Task AddSong(Models.Song song)
         {
             if (song is null)
             {
@@ -53,7 +58,8 @@ namespace SongBookService.API.Repository
 
             await _songCollection.InsertOneAsync(song);
         }
-        public async Task DeleteSongAsync(Guid id)
+
+        public async Task DeleteSong(Guid id)
         {
             var songWithTheSameId = await _songCollection.FindAsync(x => x.Id == id);
             if (!songWithTheSameId.Any())
@@ -67,21 +73,23 @@ namespace SongBookService.API.Repository
             }
         }
 
-        public async Task<Models.Song> GetSongAsync(Guid id)
+        public async Task<Models.Song> GetSong(Guid id)
         {
 
             var song = await _songCollection.FindAsync(x => x.Id == id);
             var songList = song.ToList();
             return songList.Count == 0 ?
-                throw new Exception($"Song with this Id: {id}, does not exist in database") :
+                null :
                 songList.First();
         }
-        public async Task<IEnumerable<Models.Song>> GetSongsAsync()
+
+        public async Task<IEnumerable<Models.Song>> GetSongs()
         {
             var songs = await _songCollection.FindAsync(new BsonDocument());
             return await songs.ToListAsync();
         }
-        public async Task UpdateSongAsync(Models.Song modifiedSong)
+
+        public async Task UpdateSong(Models.Song modifiedSong)
         {
             var filter = _filterBuilder.Eq(existingItem => existingItem.Id, modifiedSong.Id);
             var songToBeReplacedAsyncCursor = await _songCollection.FindAsync(filter);

@@ -8,6 +8,7 @@ namespace SongBookService.API.Repository
 {
     public interface ISongRepository
     {
+        public Task Initialize();
         public Task AddSong(Song song);
         public Task UpdateSong(Song modifiedSong);
         public Task DeleteSong(Guid id);

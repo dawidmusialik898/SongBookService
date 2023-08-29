@@ -49,6 +49,15 @@ namespace SongBookService.API
             {
 
             });
+
+            InitSongDatabase(services);
+        }
+
+        private void InitSongDatabase(IServiceCollection services)
+        {
+            var provider = services.BuildServiceProvider();
+            var repository = (ISongRepository)provider.GetService(typeof(ISongRepository));
+            repository.Initialize();
         }
 
         private void AddCorsPolicy(IServiceCollection services)
@@ -65,7 +74,6 @@ namespace SongBookService.API
 
         private static void RegisterServices(IServiceCollection services)
         {
-            services.AddSingleton<ISongRepository, MongoSongRepository>();
             services.AddSingleton<ISongDbInitializer, SneSongsFromXmlInitializer>();
             services.AddSingleton<ISongRepository, MongoSongRepository>();
         }

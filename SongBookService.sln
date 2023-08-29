@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SongBookService.API", "Song
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{94311FBE-31B8-4B29-B35C-8771485EEBEF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SongUnitTests", "SongUnitTests\SongUnitTests.csproj", "{43AAAA84-80A7-431D-8B75-CD8DDAA527ED}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SongUnitTests", "SongUnitTests\SongUnitTests.csproj", "{43AAAA84-80A7-431D-8B75-CD8DDAA527ED}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

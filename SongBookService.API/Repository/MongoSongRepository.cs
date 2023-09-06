@@ -96,7 +96,6 @@ namespace SongBookService.API.Repository
             return await songs.ToListAsync();
         }
 
-
         public async Task UpdateSong(Models.Song modifiedSong)
         {
             var filter = _filterBuilder.Eq(existingItem => existingItem.Id, modifiedSong.Id);

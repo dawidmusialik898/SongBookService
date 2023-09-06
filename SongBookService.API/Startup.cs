@@ -53,7 +53,7 @@ namespace SongBookService.API
             InitSongDatabase(services);
         }
 
-        private void InitSongDatabase(IServiceCollection services)
+        private static void InitSongDatabase(IServiceCollection services)
         {
             var provider = services.BuildServiceProvider();
             var repository = (ISongRepository)provider.GetService(typeof(ISongRepository));

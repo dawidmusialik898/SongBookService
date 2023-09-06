@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SongBookService.API", "Song
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{94311FBE-31B8-4B29-B35C-8771485EEBEF}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SongUnitTests", "SongUnitTests\SongUnitTests.csproj", "{43AAAA84-80A7-431D-8B75-CD8DDAA527ED}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{94311FBE-31B8-4B29-B35C-8771485EEBEF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{94311FBE-31B8-4B29-B35C-8771485EEBEF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{94311FBE-31B8-4B29-B35C-8771485EEBEF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{43AAAA84-80A7-431D-8B75-CD8DDAA527ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{43AAAA84-80A7-431D-8B75-CD8DDAA527ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{43AAAA84-80A7-431D-8B75-CD8DDAA527ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{43AAAA84-80A7-431D-8B75-CD8DDAA527ED}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -17,20 +17,27 @@ namespace SongBookService.API.Repository
     {
         private readonly IMongoCollection<Models.Song> _songCollection;
         private readonly FilterDefinitionBuilder<Models.Song> _filterBuilder = Builders<Models.Song>.Filter;
+        private readonly ISongDbInitializer _initializer;
+        private readonly IOptions<SongRepositoryOptions> _songRepositoryOptions;
 
         public MongoSongRepository(
             IMongoClient mongoClient,
             ISongDbInitializer initializer,
             IOptions<SongRepositoryOptions> songRepositoryOptions)
         {
-            var database = mongoClient.GetDatabase(songRepositoryOptions.Value.DatabaseName);
+            _initializer = initializer;
+            _songRepositoryOptions = songRepositoryOptions;
 
-            _songCollection = database.GetCollection<Models.Song>(songRepositoryOptions.Value.CollectionName);
+            var database = mongoClient.GetDatabase(_songRepositoryOptions.Value.DatabaseName);
+            _songCollection = database.GetCollection<Models.Song>(_songRepositoryOptions.Value.CollectionName);
+        }
 
-            var songs = _songCollection.Find(new BsonDocument()).ToList();
+        public async Task Initialize()
+        {
+            var songs = await _songCollection.FindAsync(new BsonDocument());
             if (!songs.Any())
             {
-                _songCollection.InsertMany(initializer.GetSongs());
+                await _songCollection.InsertManyAsync(_initializer.GetSongs());
             }
         }
 

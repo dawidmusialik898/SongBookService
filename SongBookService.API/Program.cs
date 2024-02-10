@@ -12,14 +12,22 @@ using SongBookService.API.Options;
 
 using SongBookService.API.Repository;
 using Microsoft.OpenApi.Models;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
+using Microsoft.EntityFrameworkCore;
+using SongBookService.API.Identity;
+using Microsoft.AspNetCore.Identity;
+using System;
+using Microsoft.AspNetCore.Authentication.BearerToken;
 
 var builder = WebApplication.CreateBuilder(args);
+var config = builder.Configuration;
 
-AddMongoClient(builder.Services, builder.Configuration);
-AddOptions(builder.Services, builder.Configuration);
-RegisterServices(builder.Services);
+AddMongoClient(builder, config);
+AddOptions(builder, config);
+AddAuthentication(builder);
+AddCorsPolicy(builder, config);
+
+RegisterServices(builder);
 
 builder.Services.Configure<RouteOptions>(options => options.LowercaseUrls = true);
 builder.Services.AddControllers(options => options.SuppressAsyncSuffixInActionNames = true);
@@ -27,61 +35,59 @@ builder.Services.AddControllers(options => options.SuppressAsyncSuffixInActionNa
 builder.Services.AddSwaggerGen(c =>
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "SongBookService.API", Version = "v1" }));
 
-var corsPolicy = AddCorsPolicy(builder.Services, builder.Configuration);
-
-builder.Services.AddAuthentication(x =>
-{
-    x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-    x.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-}).AddJwtBearer(x => x.TokenValidationParameters = new()
-{
-
-});
-
-InitSongDatabase(builder.Services);
+InitSongDatabase(builder);
 
 var app = builder.Build();
 
+Configure(app);
+
 app.Run();
 
-Configure(app, corsPolicy);
-
-static void InitSongDatabase(IServiceCollection services)
+static void InitSongDatabase(WebApplicationBuilder builder)
 {
-    var provider = services.BuildServiceProvider();
+    var provider = builder.Services.BuildServiceProvider();
     var repository = (ISongRepository)provider.GetService(typeof(ISongRepository));
     repository.Initialize();
 }
 
-string AddCorsPolicy(IServiceCollection services, IConfiguration configuration)
+void AddCorsPolicy(WebApplicationBuilder builder, IConfiguration configuration)
 {
-    var cors = configuration.GetSection("CorsPolicy").Get<CorsPolicy>();
-    services.AddCors(options => options.AddPolicy(cors.Name,
+    var cors = configuration.GetSection(nameof(CorsPolicy)).Get<CorsPolicy>();
+    builder.Services.AddCors(options => options.AddPolicy(cors.Name,
                            policy => policy.WithOrigins(cors.Origins)));
-
-    return cors.Name;
 }
 
-void AddOptions(IServiceCollection services, IConfiguration configuration)
+void AddOptions(WebApplicationBuilder builder, IConfiguration configuration) =>
+    builder.Services.Configure<SongRepositoryOptions>(configuration.GetSection(nameof(SongRepositoryOptions)));
+
+static void RegisterServices(WebApplicationBuilder builder)
 {
-    services.Configure<SongRepositoryOptions>(configuration.GetSection(nameof(SongRepositoryOptions)));
+    builder.Services.AddSingleton<ISongDbInitializer, SneSongsFromXmlInitializer>();
+    builder.Services.AddSingleton<ISongRepository, MongoSongRepository>();
 }
 
-static void RegisterServices(IServiceCollection services)
-{
-    services.AddSingleton<ISongDbInitializer, SneSongsFromXmlInitializer>();
-    services.AddSingleton<ISongRepository, MongoSongRepository>();
-}
-
-void AddMongoClient(IServiceCollection services, IConfiguration configuration)
+void AddMongoClient(WebApplicationBuilder builder, IConfiguration configuration)
 {
     BsonSerializer.RegisterSerializer(new GuidSerializer(BsonType.String));
     BsonSerializer.RegisterSerializer(new DateTimeOffsetSerializer(BsonType.String));
-    services.AddSingleton<IMongoClient>(serviceProvider => new MongoClient(configuration.GetConnectionString("SongsDb")));
+    builder.Services.AddSingleton<IMongoClient>(serviceProvider => new MongoClient(configuration.GetConnectionString("SongsDb")));
 }
 
-void Configure(IApplicationBuilder app, string corsName)
+static void AddAuthentication(WebApplicationBuilder builder)
+{
+    builder.Services.AddAuthentication(IdentityConstants.ApplicationScheme).AddCookie();
+
+    builder.Services.AddAuthorizationBuilder();
+
+    builder.Services.AddDbContext<UserDbContext>(
+        options => options.UseInMemoryDatabase("UserDb"));
+
+    builder.Services.AddIdentityCore<User>()
+        .AddEntityFrameworkStores<UserDbContext>()
+        .AddApiEndpoints();
+}
+
+static void Configure(IApplicationBuilder app)
 {
     app.UseHttpsRedirection();
 
@@ -95,11 +101,13 @@ void Configure(IApplicationBuilder app, string corsName)
 
     app.UseCors();
 
-    //app.UseAuthentication();
+    app.UseAuthentication();
 
-    //app.UseAuthorization();
+    app.UseAuthorization();
 
-    app.UseEndpoints(endpoints
-        => endpoints.MapControllers().RequireCors(corsName));
-
+    app.UseEndpoints(x =>
+    {
+        x.MapIdentityApi<User>();
+        x.MapControllers();
+    });
 }

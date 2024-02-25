@@ -1,54 +1,41 @@
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using MongoDB.Bson.Serialization.Serializers;
-using MongoDB.Bson.Serialization;
+using Microsoft.Extensions.Hosting;
+
 using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
+using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
 
 using SongBookService.API.DbInitializers;
-
-using SongBookService.API.Options;
-
-using SongBookService.API.Repository;
-using Microsoft.OpenApi.Models;
-using Microsoft.Extensions.Configuration;
-using Microsoft.EntityFrameworkCore;
 using SongBookService.API.Identity;
-using Microsoft.AspNetCore.Identity;
-using System;
-using Microsoft.AspNetCore.Authentication.BearerToken;
+using SongBookService.API.Options;
+using SongBookService.API.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;
 
 AddMongoClient(builder, config);
 AddOptions(builder, config);
-AddAuthentication(builder);
+AddAuthentication(builder,config);
 AddCorsPolicy(builder, config);
-
 RegisterServices(builder);
 
 builder.Services.Configure<RouteOptions>(options => options.LowercaseUrls = true);
 builder.Services.AddControllers(options => options.SuppressAsyncSuffixInActionNames = true);
 
-builder.Services.AddSwaggerGen(c =>
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = "SongBookService.API", Version = "v1" }));
-
-InitSongDatabase(builder);
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
 Configure(app);
 
 app.Run();
-
-static void InitSongDatabase(WebApplicationBuilder builder)
-{
-    var provider = builder.Services.BuildServiceProvider();
-    var repository = (ISongRepository)provider.GetService(typeof(ISongRepository));
-    repository.Initialize();
-}
 
 void AddCorsPolicy(WebApplicationBuilder builder, IConfiguration configuration)
 {
@@ -70,32 +57,36 @@ void AddMongoClient(WebApplicationBuilder builder, IConfiguration configuration)
 {
     BsonSerializer.RegisterSerializer(new GuidSerializer(BsonType.String));
     BsonSerializer.RegisterSerializer(new DateTimeOffsetSerializer(BsonType.String));
+    var mongoConnectionString = configuration.GetConnectionString("SongsDb");
     builder.Services.AddSingleton<IMongoClient>(serviceProvider => new MongoClient(configuration.GetConnectionString("SongsDb")));
 }
 
-static void AddAuthentication(WebApplicationBuilder builder)
+static void AddAuthentication(WebApplicationBuilder builder, IConfiguration configuration)
 {
-    builder.Services.AddAuthentication(IdentityConstants.ApplicationScheme).AddCookie();
-
-    builder.Services.AddAuthorizationBuilder();
-
+    var sqlConnectionString = configuration.GetConnectionString("UsersDb");
     builder.Services.AddDbContext<UserDbContext>(
-        options => options.UseInMemoryDatabase("UserDb"));
+        options => options.UseSqlServer(configuration.GetConnectionString("UsersDb")));
 
-    builder.Services.AddIdentityCore<User>()
+    builder.Services.AddIdentityCore<SongServiceUser>()
         .AddEntityFrameworkStores<UserDbContext>()
         .AddApiEndpoints();
+
+    builder.Services.AddAuthentication();
+    builder.Services.AddAuthorization();
 }
 
-static void Configure(IApplicationBuilder app)
+static void Configure(WebApplication app)
 {
+    if (app.Environment.IsDevelopment())
+    {
+        app.UseDeveloperExceptionPage();
+
+        app.UseSwagger();
+
+        app.UseSwaggerUI();
+    }
+
     app.UseHttpsRedirection();
-
-    app.UseDeveloperExceptionPage();
-
-    app.UseSwagger();
-
-    app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "SongBookService.API v1"));
 
     app.UseRouting();
 
@@ -105,9 +96,7 @@ static void Configure(IApplicationBuilder app)
 
     app.UseAuthorization();
 
-    app.UseEndpoints(x =>
-    {
-        x.MapIdentityApi<User>();
-        x.MapControllers();
-    });
+    app.MapIdentityApi<SongServiceUser>();
+
+    app.MapControllers();
 }

@@ -2,7 +2,7 @@
 
 namespace SongBookService.API.Identity
 {
-    public class User : IdentityUser
+    public class SongServiceUser : IdentityUser
     {
     }
 }

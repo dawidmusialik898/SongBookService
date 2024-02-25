@@ -23,6 +23,7 @@ namespace SongBookService.API.Controllers
     {
         private readonly ISongRepository _repository;
         private readonly ILogger<SongController> _logger;
+
         public SongController(ISongRepository repository, ILogger<SongController> logger)
         {
             _repository = repository;
@@ -39,7 +40,8 @@ namespace SongBookService.API.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error when processing get songs request. Message:{message}. Stack trace: {stackTrace}", ex.Message, ex.StackTrace);
+                _logger.LogError(ex,"Error when processing get songs request. Message:{message}. Stack trace: {stackTrace}", 
+                    ex.Message, ex.StackTrace);
                 return StatusCode(StatusCodes.Status500InternalServerError, "Error while getting songs collection occured.");
             }
         }
@@ -57,6 +59,8 @@ namespace SongBookService.API.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error when processing get songs request. Message:{message}. Stack trace: {stackTrace}",
+                    ex.Message, ex.StackTrace);
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
@@ -77,6 +81,8 @@ namespace SongBookService.API.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error when processing get songs request. Message:{message}. Stack trace: {stackTrace}",
+                    ex.Message, ex.StackTrace);
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
@@ -100,6 +106,8 @@ namespace SongBookService.API.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error when processing get songs request. Message:{message}. Stack trace: {stackTrace}",
+                    ex.Message, ex.StackTrace);
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
@@ -120,6 +128,8 @@ namespace SongBookService.API.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error when processing get songs request. Message:{message}. Stack trace: {stackTrace}",
+                    ex.Message, ex.StackTrace);
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }

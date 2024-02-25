@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace SongBookService.API.Identity
 {
-    public class UserDbContext : IdentityDbContext<User>
+    public class UserDbContext : IdentityDbContext<SongServiceUser>
     {
         //private readonly DbContextOptions<UserDbContext> _options;
         public UserDbContext(DbContextOptions<UserDbContext> options) : base(options)

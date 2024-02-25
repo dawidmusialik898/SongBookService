@@ -10,28 +10,48 @@ services:
         - "8088:80/tcp"
         - "8089:443/tcp"
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=https://+:443;http://+:80
-      - ASPNETCORE_HTTP_PORT=8088
-      - ASPNETCORE_HTTPS_PORT=8089
+        - ASPNETCORE_ENVIRONMENT=Development
+        - ASPNETCORE_URLS=https://+:443;http://+:80
+        - ASPNETCORE_HTTP_PORT=8088
+        - ASPNETCORE_HTTPS_PORT=8089
     volumes:
-      - ${APPDATA}\Microsoft\UserSecrets\:/root/.microsoft/usersecrets:ro
-      - ${APPDATA}\ASP.NET\Https\:/root/.aspnet/https:ro
+        - ${APPDATA}\Microsoft\UserSecrets\:/root/.microsoft/usersecrets:ro
+        - ${APPDATA}\ASP.NET\Https\:/root/.aspnet/https:ro
+  
+  userdb:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    ports:
+        - 1433:1433
+    environment:
+        ACCEPT_EULA: Y
+        MSSQL_SA_PASSWORD: someStrongPassword123@!
+        MSSQL_PID: Standard
+    volumes:
+        - userDbVolume:/etc/data
 
   songbookdb:
     image: mongo
     ports: 
-    - "27017:27017"
+        - "27017:27017"
     environment:
         MONGO_INITDB_ROOT_USERNAME: root
         MONGO_INITDB_ROOT_PASSWORD: example
+    volumes:
+        - songDbVolume:/etc/data
 
   mongo-express:
     image: mongo-express
     restart: always
     ports:
-      - 8081:8081
+        - 8081:8081
     environment:
       ME_CONFIG_MONGODB_ADMINUSERNAME: root
       ME_CONFIG_MONGODB_ADMINPASSWORD: example
       ME_CONFIG_MONGODB_SERVER: songbookdb
+
+volumes:
+  userDbVolume:
+    name: userDbVolume
+  songDbVolume:
+    name: songDbVolume
+

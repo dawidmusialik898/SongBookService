@@ -13,7 +13,7 @@ namespace SongBookService.API.Migrations
 {
     [DbContext(typeof(UserDbContext))]
     [Migration("20240225144234_initial")]
-    partial class initial
+    partial class InitialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

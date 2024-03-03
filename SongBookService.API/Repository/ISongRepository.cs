@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using SongBookService.API.Models;
@@ -9,10 +8,10 @@ namespace SongBookService.API.Repository
     public interface ISongRepository
     {
         public Task Initialize();
-        public Task AddSong(Song song);
-        public Task UpdateSong(Song modifiedSong);
-        public Task DeleteSong(Guid id);
-        public Task<Song> GetSong(Guid id);
-        public Task<IEnumerable<Song>> GetSongs();
+        public Task AddSongToSongBook(Guid songBookId, Song newSong);
+        public Task UpdateSongInSongBook(Guid songBookId, Song modifiedSong);
+        public Task DeleteSongFromSongBook(Guid songBookId, Guid songId);
+        public Task<SongBook> GetSongBook(Guid songBookId);
+        public Task<Song> GetSongFromSongBook(Guid songBookId, Guid songId);
     }
 }

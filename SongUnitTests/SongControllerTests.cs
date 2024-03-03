@@ -267,7 +267,7 @@ namespace SongUnitTests
             //arrange
             var song = _songMock.SongGenerator.Generate();
             _songRepository.GetSong(song.Id).ReturnsForAnyArgs(Task.FromResult(song));
-            _songRepository.UpdateSong(song).ThrowsForAnyArgs(new Exception("Any Exception"));
+            _songRepository.UpdateSongInSongBook(song).ThrowsForAnyArgs(new Exception("Any Exception"));
 
             //act
             var actionResult = await _sut.ModifySong(song.AsStructuredSongDTO());

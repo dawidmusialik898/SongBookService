@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -9,14 +8,14 @@ using MongoDB.Bson;
 using MongoDB.Driver;
 
 using SongBookService.API.DbInitializers;
+using SongBookService.API.Models;
 using SongBookService.API.Options;
 
 namespace SongBookService.API.Repository
 {
     public class MongoSongRepository : ISongRepository
     {
-        private readonly IMongoCollection<Models.Song> _songCollection;
-        private readonly FilterDefinitionBuilder<Models.Song> _filterBuilder = Builders<Models.Song>.Filter;
+        private readonly IMongoCollection<SongBook> _songBookCollection;
         private readonly ISongDbInitializer _initializer;
         private readonly IOptions<SongRepository> _songRepositoryOptions;
 
@@ -27,85 +26,93 @@ namespace SongBookService.API.Repository
         {
             _initializer = initializer;
             _songRepositoryOptions = songRepositoryOptions;
-
             var database = mongoClient.GetDatabase(_songRepositoryOptions.Value.DatabaseName);
-            _songCollection = database.GetCollection<Models.Song>(_songRepositoryOptions.Value.CollectionName);
+            _songBookCollection = database.GetCollection<SongBook>(_songRepositoryOptions.Value.CollectionName);
         }
 
         public async Task Initialize()
         {
-            var songs = await _songCollection.FindAsync(new BsonDocument());
+            var songs = await _songBookCollection.FindAsync(new BsonDocument());
             if (!songs.Any())
             {
-                await _songCollection.InsertManyAsync(_initializer.GetSongs());
+                await _songBookCollection.InsertOneAsync(_initializer.InitializeSneSongBook());
             }
         }
 
-        public async Task AddSong(Models.Song song)
+        public async Task AddSongToSongBook(Guid songBookId, Song newSong)
         {
-            if (song is null)
+            ArgumentNullException.ThrowIfNull(newSong);
+            var songBook = await GetSongBook(songBookId);
+
+            var songWithTheSameIdExists = songBook.Songs.Any(x => x.Id == newSong.Id);
+            if (songWithTheSameIdExists)
             {
-                throw new ArgumentNullException(nameof(song));
+                throw new ArgumentException(
+                    $"Song with this Id: {newSong.Id}, already exists in database", nameof(newSong));
             }
 
-            var songWithTheSameIdAsyncCursor = await _songCollection.FindAsync(x => x.Id == song.Id);
-            var songWithTheSameId = songWithTheSameIdAsyncCursor.ToList();
-            if (songWithTheSameId.Any())
+            var songWithTheSameNumberExists = songBook.Songs.Any(x => x.Number == newSong.Number);
+            if (songWithTheSameNumberExists)
             {
-                throw new Exception($"Song with this Id: {songWithTheSameId.First().Id}, already exists in database");
+                throw new ArgumentException(
+                    $"Song with this Number: {newSong.Number} already exists in database", nameof(newSong));
             }
 
-            var songWithTheSameTitleAsyncCursor = await _songCollection.FindAsync(x => x.Number == song.Number);
-            var songWithTheSameTitle = songWithTheSameTitleAsyncCursor.ToList();
-            if (songWithTheSameTitle.Any())
-            {
-                throw new Exception($"Song with this Number: {songWithTheSameTitle.First().Number}" +
-                    " already exists in database");
-            }
+            songBook.Songs.ToList().Add(newSong);
 
-            await _songCollection.InsertOneAsync(song);
+            await _songBookCollection.ReplaceOneAsync(x => x.Id == songBookId, songBook);
         }
 
-        public async Task DeleteSong(Guid id)
+        public async Task DeleteSongFromSongBook(Guid songBookId, Guid songId)
         {
-            var songWithTheSameId = await _songCollection.FindAsync(x => x.Id == id);
-            if (!songWithTheSameId.Any())
+            var songBook = await GetSongBook(songBookId);
+
+            var songWithTheSameIdExists = songBook.Songs.Any(x => x.Id == songId);
+            if (songWithTheSameIdExists)
             {
-                throw new Exception($"Song with this Id: {id}, does not exist in database");
+                throw new ArgumentException(
+                    $"Song with this Id: {songId}, does not exist in database", nameof(songId));
             }
-            var result = await _songCollection.DeleteOneAsync(x => x.Id == id);
+
+            var result = await _songBookCollection.DeleteOneAsync(x => x.Id == songId);
             if (result.DeletedCount == 0)
             {
-                throw new Exception($"Could not delete song with this Id: {id}");
+                throw new Exception(
+                    $"Could not delete song with this Id: {songId}");
             }
         }
-
-        public async Task<Models.Song> GetSong(Guid id)
+        
+        public async Task<SongBook> GetSongBook(Guid songBookId)
         {
-
-            var song = await _songCollection.FindAsync(x => x.Id == id);
-            var songList = song.ToList();
-            return songList.Count == 0 ?
-                null :
-                songList.First();
+            return (await _songBookCollection.FindAsync(x => x.Id == songBookId)).ToList().FirstOrDefault()
+                            ?? throw new ArgumentException($"SongBook with given id: {songBookId} was not found.", nameof(songBookId));
         }
 
-        public async Task<IEnumerable<Models.Song>> GetSongs()
+        public async Task<Song> GetSongFromSongBook(Guid songBookId, Guid songId)
         {
-            var songs = await _songCollection.FindAsync(new BsonDocument());
-            return await songs.ToListAsync();
+            var songBook = await GetSongBook(songBookId);
+
+            return songBook.Songs.FirstOrDefault(x => x.Id == songId)
+                ?? throw new ArgumentException($"Song with this Id: {songId}, does not exist in database", nameof(songId));
         }
 
-        public async Task UpdateSong(Models.Song modifiedSong)
+        public async Task UpdateSongInSongBook(Guid songBookId, Song modifiedSong)
         {
-            var filter = _filterBuilder.Eq(existingItem => existingItem.Id, modifiedSong.Id);
-            var songToBeReplacedAsyncCursor = await _songCollection.FindAsync(filter);
-            var songToBeReplaced = songToBeReplacedAsyncCursor.ToList();
-            if (!songToBeReplaced.Any())
+            var songBook = await GetSongBook(songBookId);
+            var songs = songBook.Songs.ToList();
+            var existingSong = songs.FirstOrDefault(x => x.Id == modifiedSong.Id);
+            if (existingSong is null)
             {
-                await _songCollection.InsertOneAsync(modifiedSong);
+                songs.Add(modifiedSong);
             }
-            var result = await _songCollection.ReplaceOneAsync(filter, modifiedSong);
+            else
+            {
+                var index = songs.IndexOf(existingSong);
+                songs[index] = modifiedSong;
+            }
+
+            songBook.Songs = songs;
+            var result = await _songBookCollection.ReplaceOneAsync(x => x.Id == songBookId, songBook);
         }
     }
 }

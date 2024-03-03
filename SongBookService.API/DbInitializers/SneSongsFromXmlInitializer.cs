@@ -11,7 +11,7 @@ namespace SongBookService.API.DbInitializers
     public class SneSongsFromXmlInitializer : ISongDbInitializer
     {
         private const string _filepath = @"snesongs.xml";
-        public IEnumerable<Song> GetSongs()
+        public SongBook InitializeSneSongBook()
         {
             if (!File.Exists(_filepath))
             {
@@ -27,7 +27,11 @@ namespace SongBookService.API.DbInitializers
                 songs[i] = GetSong(xmlSongs[i]);
             }
 
-            return songs;
+            return new()
+            {
+                Id = Guid.NewGuid(),
+                Songs = songs,
+            };
         }
         private static Song GetSong(XmlNode xmlSong)
         {

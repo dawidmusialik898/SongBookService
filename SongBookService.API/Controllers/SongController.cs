@@ -24,7 +24,9 @@ namespace SongBookService.API.Controllers
         private readonly ISongRepository _repository;
         private readonly ILogger<SongController> _logger;
 
-        public SongController(ISongRepository repository, ILogger<SongController> logger)
+        public SongController(
+            ISongRepository repository,
+            ILogger<SongController> logger)
         {
             _repository = repository;
             _logger = logger;
@@ -96,7 +98,7 @@ namespace SongBookService.API.Controllers
                 var song = songDTO.AsStructuredSong();
                 if (dbsong is not null)
                 {
-                    await _repository.UpdateSong(song);
+                    await _repository.UpdateSongInSongBook(song);
                 }
                 else
                 {

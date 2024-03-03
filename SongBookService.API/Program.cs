@@ -1,3 +1,5 @@
+using System.Threading.Tasks;
+
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Routing;
@@ -23,6 +25,9 @@ SetupServices(builder, config);
 
 var app = builder.Build();
 
+await CreateSuperUser(app, config);
+await InitializeSongDatabase(app, config);
+
 SetupMiddleware(app);
 
 app.Run();
@@ -42,6 +47,9 @@ static void SetupServices(WebApplicationBuilder builder, IConfiguration config)
         options => options.UseSqlServer(config.GetConnectionString("UsersDb")));
 
     builder.Services.AddIdentityApiEndpoints<SongServiceUser>()
+        .AddRoles<IdentityRole>()
+        .AddRoleManager<RoleManager<IdentityRole>>()
+        .AddUserManager<UserManager<SongServiceUser>>()
         .AddEntityFrameworkStores<UserDbContext>();
 
     var cors = config.GetSection(nameof(CorsPolicy)).Get<CorsPolicy>();
@@ -82,4 +90,48 @@ static void SetupMiddleware(WebApplication app)
     app.MapIdentityApi<SongServiceUser>();
 
     app.MapControllers();
+}
+
+static async Task InitializeSongDatabase(WebApplication app, ConfigurationManager config)
+{
+    using var scope = app.Services.CreateScope();
+
+    var repository = scope.ServiceProvider.GetRequiredService<ISongRepository>();
+
+    await repository.Initialize();
+}
+
+static async Task CreateSuperUser(WebApplication app, IConfiguration config)
+{
+    using var scope = app.Services.CreateScope();
+
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<SongServiceUser>>();
+
+    var saRole = config["SuperUser:Role"];
+
+    string[] roles = [saRole, "Admin", "Owner", "Contributor", "User"];
+    foreach (var role in roles)
+    {
+        if (!await roleManager.RoleExistsAsync(role))
+        {
+            var roleRole = new IdentityRole(role);
+            await roleManager.CreateAsync(roleRole);
+        }
+    }
+
+    var saEmail = config["SuperUser:Email"];
+    var saPassword = config["SuperUser:Password"];
+    
+    if (await userManager.FindByNameAsync(saEmail) == null)
+    {
+        var user = new SongServiceUser()
+        {
+            UserName = "sa",
+            Email = saEmail,
+            EmailConfirmed = true,
+        };
+        var result = await userManager.CreateAsync(user, saPassword);
+        await userManager.AddToRoleAsync(user, saRole);
+    }
 }

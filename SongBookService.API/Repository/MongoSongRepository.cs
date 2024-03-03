@@ -18,12 +18,12 @@ namespace SongBookService.API.Repository
         private readonly IMongoCollection<Models.Song> _songCollection;
         private readonly FilterDefinitionBuilder<Models.Song> _filterBuilder = Builders<Models.Song>.Filter;
         private readonly ISongDbInitializer _initializer;
-        private readonly IOptions<SongRepositoryOptions> _songRepositoryOptions;
+        private readonly IOptions<SongRepository> _songRepositoryOptions;
 
         public MongoSongRepository(
             IMongoClient mongoClient,
             ISongDbInitializer initializer,
-            IOptions<SongRepositoryOptions> songRepositoryOptions)
+            IOptions<SongRepository> songRepositoryOptions)
         {
             _initializer = initializer;
             _songRepositoryOptions = songRepositoryOptions;
